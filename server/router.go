@@ -1,11 +1,17 @@
 package server
 
 import (
+	"github.com/akkinasrikar/ecommerce-cart/controllers"
+	servicesLogin "github.com/akkinasrikar/ecommerce-cart/services/login"
+	validatorsLogin "github.com/akkinasrikar/ecommerce-cart/validators/login"
 	"github.com/gin-gonic/gin"
 )
 
 func setUpRoutes(router *gin.Engine) {
-	router.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{"message": "pong"})
-	})
+	LoginHandler := controllers.NewLoginHandler(servicesLogin.NewLoginService(), validatorsLogin.NewValidator())
+	loginHandler(router, *LoginHandler)
+}
+
+func loginHandler(router *gin.Engine, LoginHandler controllers.LoginHandler) {
+	router.POST("/signup", LoginHandler.SignUp)
 }
