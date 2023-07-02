@@ -20,3 +20,4 @@ func (s *HttpServer) Start() error {
 	s.Router.Run(":8080")
 	return nil
 }
+

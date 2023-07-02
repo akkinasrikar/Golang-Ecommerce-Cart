@@ -4,6 +4,7 @@ import (
 	golog "log"
 
 	"github.com/akkinasrikar/ecommerce-cart/server"
+	database "github.com/akkinasrikar/ecommerce-cart/database"
 )
 
 func main() {
@@ -12,6 +13,10 @@ func main() {
 		golog.Fatal("Error initializing server", err)
 	}
 	golog.Println("Initialized server")
+	
+	database.ConnectDataBase()
+	golog.Println("Connected to database")
+	
 	err = server.Start()
 	if err != nil {
 		golog.Fatal("Error starting server", err)
