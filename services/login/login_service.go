@@ -6,10 +6,13 @@ import (
 )
 
 func (s *loginService) SignUp(req entities.SignUp) (responses.SingUp, error) {
+	userDetails, err := s.repoService.SignUp(req)
+	if err != nil {
+		return responses.SingUp{}, err
+	}
 	return responses.SingUp{
-		Name:  req.Name,
-		Email: req.Email,
-		Message: "Successfully signed up",
+		Name: userDetails.Name,
+		Email: userDetails.Email,
+		Message: "User created successfully",
 	}, nil
-
 }
