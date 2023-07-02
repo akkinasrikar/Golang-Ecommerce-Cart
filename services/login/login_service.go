@@ -16,3 +16,14 @@ func (s *loginService) SignUp(req entities.SignUp) (responses.SingUp, error) {
 		Message: "User created successfully",
 	}, nil
 }
+
+func (s *loginService) Login(req entities.Login) (responses.Login, error) {
+	_, err := s.repoService.Login(req)
+	if err != nil {
+		return responses.Login{}, err
+	}
+	return responses.Login{
+		UserName: req.Name,
+		Token: "123",
+	}, nil
+}

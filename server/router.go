@@ -17,4 +17,5 @@ func setUpRoutes(router *gin.Engine, db *gorm.DB) {
 
 func loginHandler(router *gin.Engine, LoginHandler controllers.LoginHandler) {
 	router.POST("/signup", LoginHandler.SignUp)
+	router.POST("/login", LoginHandler.Login)
 }

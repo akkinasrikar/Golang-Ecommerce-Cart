@@ -36,3 +36,17 @@ func (lh *LoginHandler) SignUp(ctx *gin.Context) {
 	}
 	ctx.JSON(200, resp)
 }
+
+func (lh *LoginHandler) Login(ctx *gin.Context) {
+	req, ecomError := lh.loginValidator.ValidateLogin(ctx)
+	if ecomError.Message != nil {
+		ctx.Error(errors.Wrap(&ecomError, "Error validating request body for Login"))
+		return
+	}
+	resp, err := lh.loginService.Login(req)
+	if err != nil {
+		ctx.Error(errors.Wrap(err, "Error in Login/Login"))
+		return
+	}
+	ctx.JSON(200, resp)
+}

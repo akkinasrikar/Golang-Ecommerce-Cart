@@ -18,4 +18,5 @@ func NewLoginService(respoService repositories.RepositoryInterface) LoginService
 
 type LoginService interface {
 	SignUp(req entities.SignUp) (responses.SingUp, error)
+	Login(req entities.Login) (responses.Login, error)
 }

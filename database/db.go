@@ -45,6 +45,7 @@ func CheckError(err error) {
 }
 
 func AutoMigrate(db *gorm.DB) error {
+	// automigrate with table name
 	err := db.AutoMigrate(&entities.SignUp{})
 	if err != nil {
 		return err

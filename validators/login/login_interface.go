@@ -14,4 +14,5 @@ func NewValidator() LoginValidator {
 
 type LoginValidator interface {
 	ValidateSignUp(ctx *gin.Context) (entities.SignUp, models.EcomError)
+	ValidateLogin(ctx *gin.Context) (entities.Login, models.EcomError)
 }
