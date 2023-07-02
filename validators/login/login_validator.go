@@ -13,3 +13,10 @@ func (v *loginValidator) ValidateSignUp(ctx *gin.Context) (reqBody entities.Sign
 	}
 	return reqBody, models.EcomError{}
 }
+
+func (v *loginValidator) ValidateLogin(ctx *gin.Context) (reqBody entities.Login, ecomErr models.EcomError) {
+	if err := ctx.ShouldBindJSON(&reqBody); err != nil {
+		return entities.Login{}, *helper.ErrorParamMissingOrInvalid("Invalid request body", "body")
+	}
+	return reqBody, models.EcomError{}
+}
