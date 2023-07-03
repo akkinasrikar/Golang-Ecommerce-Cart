@@ -4,9 +4,15 @@ import (
 	"github.com/akkinasrikar/ecommerce-cart/models/entities"
 	"github.com/akkinasrikar/ecommerce-cart/models/responses"
 	"github.com/akkinasrikar/ecommerce-cart/utils"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (s *loginService) SignUp(req entities.SignUp) (responses.SingUp, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return responses.SingUp{}, err
+	}
+	req.Password = string(hashedPassword)
 	userDetails, err := s.repoService.SignUp(req)
 	if err != nil {
 		return responses.SingUp{}, err
