@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"github.com/akkinasrikar/ecommerce-cart/models/entities"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (r *Repository) SignUp(userDetails entities.SignUp) (entities.SignUp, error) {
@@ -12,11 +13,13 @@ func (r *Repository) SignUp(userDetails entities.SignUp) (entities.SignUp, error
 	return userDetails, nil
 }
 
-// Login
 func (r *Repository) Login(userDetails entities.Login) (entities.Login, error) {
 	var user entities.Login
-	// compare user_name or user_email with userDetails.Name
-	err := r.Db.Table("user_details").Where("user_name = ? OR user_email = ? and user_password = ?", userDetails.Name, userDetails.Name, userDetails.Password).First(&user).Error
+	err := r.Db.Table("user_details").Where("user_name = ? OR user_email = ?", userDetails.Name, userDetails.Name).First(&user).Error
+	if err != nil {
+		return entities.Login{}, err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userDetails.Password))
 	if err != nil {
 		return entities.Login{}, err
 	}
