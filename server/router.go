@@ -21,5 +21,6 @@ func loginHandler(router *gin.Engine, LoginHandler controllers.LoginHandler) {
 	router.POST("/login", LoginHandler.Login)
 
 	router.Use(middleware.ValidateJwtAuthToken())
+	router.Use((middleware.TraceIDMiddleware()))
 	router.GET("/homePage", LoginHandler.HomePage)
 }
