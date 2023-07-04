@@ -37,15 +37,9 @@ func ValidateJwtAuthToken() func(*gin.Context) {
 			ctx.Abort()
 			return
 		}
-		claims, ok := token.Claims.(jwt.MapClaims)
-		if !ok {
-			ecomErr := setAuthError(constants.ErrorMessage.AUTHENTICATION_REQUIRED)
-			ctx.JSON(constants.ErrorType.AUTHENTICATION_ERROR.Code, ecomErr)
-			ctx.Abort()
-			return
-		}
-		ecomCtx = context.WithValue(ecomCtx, models.EcomctxKey("Claims"), claims)
-		ctx.Set("ecomCtx", ecomCtx)
+		claims := token.Claims.(jwt.MapClaims)
+		ecomCtx = setEcomCtx(ecomCtx, claims, header)
+		ctx.Set("EcomCtx", ecomCtx)
 		ctx.Next()
 	}
 }
@@ -65,4 +59,16 @@ func setAuthError(errMsg string) models.EcomErrorResponse {
 	return models.EcomErrorResponse{
 		ErrorType: zwErrBody,
 	}
+}
+
+func setEcomCtx(ecomCtx context.Context, tokenClaims jwt.Claims, header models.AuthData) context.Context {
+	var authData models.AuthData
+
+	authData.Authorization = header.Authorization
+	authData.ISsandBox = header.ISsandBox
+	sub := tokenClaims.(jwt.MapClaims)["sub"].(string)
+	authData.UserName = sub
+	ecomCtxUpdated := context.Background()
+	ecomCtxUpdated = context.WithValue(ecomCtxUpdated, models.EcomctxKey("AuthData"), authData)
+	return ecomCtxUpdated
 }
