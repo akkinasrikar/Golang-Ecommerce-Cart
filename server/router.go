@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/akkinasrikar/ecommerce-cart/controllers"
+	"github.com/akkinasrikar/ecommerce-cart/middleware"
 	"github.com/akkinasrikar/ecommerce-cart/repositories"
 	servicesLogin "github.com/akkinasrikar/ecommerce-cart/services/login"
 	validatorsLogin "github.com/akkinasrikar/ecommerce-cart/validators/login"
@@ -18,4 +19,7 @@ func setUpRoutes(router *gin.Engine, db *gorm.DB) {
 func loginHandler(router *gin.Engine, LoginHandler controllers.LoginHandler) {
 	router.POST("/signup", LoginHandler.SignUp)
 	router.POST("/login", LoginHandler.Login)
+
+	router.Use(middleware.ValidateJwtAuthToken())
+	router.GET("/homePage", LoginHandler.HomePage)
 }

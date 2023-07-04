@@ -50,3 +50,9 @@ func (lh *LoginHandler) Login(ctx *gin.Context) {
 	}
 	ctx.JSON(200, resp)
 }
+
+func (lh *LoginHandler) HomePage(ctx *gin.Context) {
+	ctx.JSON(200, gin.H{
+		"message": "Welcome to Ecommerce Cart",
+	})
+}
