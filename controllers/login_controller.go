@@ -1,9 +1,12 @@
 package controllers
 
 import (
+	"context"
+
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 
+	"github.com/akkinasrikar/ecommerce-cart/models"
 	services "github.com/akkinasrikar/ecommerce-cart/services/login"
 	validator "github.com/akkinasrikar/ecommerce-cart/validators/login"
 	"github.com/gin-gonic/gin"
@@ -52,7 +55,10 @@ func (lh *LoginHandler) Login(ctx *gin.Context) {
 }
 
 func (lh *LoginHandler) HomePage(ctx *gin.Context) {
+	ecomGinCtx, _ := ctx.Get("EcomCtx")
+	ecomCtx := ecomGinCtx.(context.Context)
+	authData := ecomCtx.Value(models.EcomctxKey("AuthData")).(models.AuthData)
 	ctx.JSON(200, gin.H{
-		"message": "Welcome to Ecommerce Cart",
+		"message": "Welcome " + authData.UserName + " to HomePage",
 	})
 }
