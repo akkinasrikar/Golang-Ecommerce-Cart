@@ -66,6 +66,3 @@ func setAuthError(errMsg string) models.EcomErrorResponse {
 		ErrorType: zwErrBody,
 	}
 }
-
-func SetAuthError(ctx *gin.Context) {
-}
