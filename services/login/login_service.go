@@ -4,6 +4,8 @@ import (
 	"github.com/akkinasrikar/ecommerce-cart/models/entities"
 	"github.com/akkinasrikar/ecommerce-cart/models/responses"
 	"github.com/akkinasrikar/ecommerce-cart/utils"
+	redis "github.com/go-redis/redis/v8"
+	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -25,16 +27,33 @@ func (s *loginService) SignUp(req entities.SignUp) (responses.SingUp, error) {
 }
 
 func (s *loginService) Login(req entities.Login) (responses.Login, error) {
+	var loginDetails responses.Login
+	loginDetails.UserName = req.Name
 	_, err := s.repoService.Login(req)
 	if err != nil {
 		return responses.Login{}, err
 	}
-	token, err := utils.GenerateToken(req.Name)
-	if err != nil {
+	token, err := s.redisClient.Get(req.Name).Result()
+	if err == redis.Nil {
 		return responses.Login{}, err
 	}
-	return responses.Login{
-		UserName: req.Name,
-		Token:    token,
-	}, nil
+	if token != "" {
+		_, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+			return []byte("testing"), nil
+		})
+		if err == nil {
+			loginDetails.Token = token
+			return loginDetails, nil
+		}
+	}
+	token, err = utils.GenerateToken(req.Name)
+	if err != nil {
+		return loginDetails, err
+	}
+	loginDetails.Token = token
+	err = s.redisClient.Set(req.Name, token, 0).Err()
+	if err != nil {
+		return loginDetails, err
+	}
+	return loginDetails, nil
 }
