@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/akkinasrikar/ecommerce-cart/models"
 	"github.com/akkinasrikar/ecommerce-cart/models/entities"
 	"github.com/akkinasrikar/ecommerce-cart/models/responses"
 	"github.com/akkinasrikar/ecommerce-cart/repositories"
@@ -20,6 +21,6 @@ func NewLoginService(respoService repositories.RepositoryInterface, redisClient 
 }
 
 type LoginService interface {
-	SignUp(req entities.SignUp) (responses.SingUp, error)
-	Login(req entities.Login) (responses.Login, error)
+	SignUp(req entities.SignUp) (responses.SingUp, models.EcomError)
+	Login(req entities.Login) (responses.Login, models.EcomError)
 }
