@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/akkinasrikar/ecommerce-cart/models"
 	"github.com/akkinasrikar/ecommerce-cart/models/entities"
 	"gorm.io/gorm"
 )
@@ -16,6 +17,6 @@ func NewRepository(db *gorm.DB) RepositoryInterface {
 }
 
 type RepositoryInterface interface {
-	SignUp(userDetails entities.SignUp) (entities.SignUp, error)
-	Login(userDetails entities.Login) (entities.Login, error)
+	SignUp(userDetails entities.SignUp) (entities.SignUp, models.EcomError)
+	Login(userDetails entities.Login) (entities.Login, models.EcomError)
 }

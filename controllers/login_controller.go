@@ -2,12 +2,13 @@ package controllers
 
 import (
 	"context"
+	"net/http"
 
-	"github.com/pkg/errors"
 	"gorm.io/gorm"
 
 	"github.com/akkinasrikar/ecommerce-cart/models"
 	services "github.com/akkinasrikar/ecommerce-cart/services/login"
+	"github.com/akkinasrikar/ecommerce-cart/validators/helper"
 	validator "github.com/akkinasrikar/ecommerce-cart/validators/login"
 	"github.com/gin-gonic/gin"
 )
@@ -29,29 +30,33 @@ func NewLoginHandler(loginService services.LoginService, loginValidator validato
 func (lh *LoginHandler) SignUp(ctx *gin.Context) {
 	req, ecomError := lh.loginValidator.ValidateSignUp(ctx)
 	if ecomError.Message != nil {
-		ctx.Error(errors.Wrap(&ecomError, "Error validating request body for Login/SignUp"))
+		ecomError := helper.SetInternalError(ecomError.Message.Error())
+		ctx.JSON(int(ecomError.ErrorType.Code), &ecomError)
 		return
 	}
 	resp, err := lh.loginService.SignUp(req)
-	if err != nil {
-		ctx.Error(errors.Wrap(err, "Error in Login/SignUp"))
+	if err.Message != nil {
+		ecomErr := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(ecomErr.ErrorType.Code), &ecomErr)
 		return
 	}
-	ctx.JSON(200, resp)
+	ctx.JSON(http.StatusOK, resp)
 }
 
 func (lh *LoginHandler) Login(ctx *gin.Context) {
 	req, ecomError := lh.loginValidator.ValidateLogin(ctx)
 	if ecomError.Message != nil {
-		ctx.Error(errors.Wrap(&ecomError, "Error validating request body for Login"))
+		ecomError := helper.SetInternalError(ecomError.Message.Error())
+		ctx.JSON(int(ecomError.ErrorType.Code), &ecomError)
 		return
 	}
 	resp, err := lh.loginService.Login(req)
-	if err != nil {
-		ctx.Error(errors.Wrap(err, "Error in Login/Login"))
+	if err.Message != nil {
+		ecomErr := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(ecomErr.ErrorType.Code), &ecomErr)
 		return
 	}
-	ctx.JSON(200, resp)
+	ctx.JSON(http.StatusOK, resp)
 }
 
 func (lh *LoginHandler) HomePage(ctx *gin.Context) {

@@ -1,41 +1,43 @@
 package services
 
 import (
+	"github.com/akkinasrikar/ecommerce-cart/models"
 	"github.com/akkinasrikar/ecommerce-cart/models/entities"
 	"github.com/akkinasrikar/ecommerce-cart/models/responses"
 	"github.com/akkinasrikar/ecommerce-cart/utils"
+	"github.com/akkinasrikar/ecommerce-cart/validators/helper"
 	redis "github.com/go-redis/redis/v8"
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *loginService) SignUp(req entities.SignUp) (responses.SingUp, error) {
+func (s *loginService) SignUp(req entities.SignUp) (responses.SingUp, models.EcomError) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return responses.SingUp{}, err
+		return responses.SingUp{}, *helper.ErrorInternalSystemError("Error while hashing password : " + err.Error())
 	}
 	req.Password = string(hashedPassword)
-	userDetails, err := s.repoService.SignUp(req)
-	if err != nil {
-		return responses.SingUp{}, err
+	userDetails, ecomErr := s.repoService.SignUp(req)
+	if ecomErr.Message != nil {
+		return responses.SingUp{}, *helper.ErrorInternalSystemError("Error while signing up : " + ecomErr.Message.Error())
 	}
 	return responses.SingUp{
 		Name:    userDetails.Name,
 		Email:   userDetails.Email,
 		Message: "User created successfully",
-	}, nil
+	}, models.EcomError{}
 }
 
-func (s *loginService) Login(req entities.Login) (responses.Login, error) {
+func (s *loginService) Login(req entities.Login) (responses.Login, models.EcomError) {
 	var loginDetails responses.Login
 	loginDetails.UserName = req.Name
-	_, err := s.repoService.Login(req)
-	if err != nil {
-		return responses.Login{}, err
+	_, ecomErr := s.repoService.Login(req)
+	if ecomErr.Message != nil {
+		return responses.Login{}, *helper.ErrorInternalSystemError("Error while logging in : " + ecomErr.Message.Error())
 	}
 	token, err := s.redisClient.Get(req.Name).Result()
 	if err == redis.Nil {
-		return responses.Login{}, err
+		return responses.Login{}, *helper.ErrorInternalSystemError("Error while getting token from redis cache : " + err.Error())
 	}
 	if token != "" {
 		_, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
@@ -43,17 +45,17 @@ func (s *loginService) Login(req entities.Login) (responses.Login, error) {
 		})
 		if err == nil {
 			loginDetails.Token = token
-			return loginDetails, nil
+			return loginDetails, models.EcomError{}
 		}
 	}
 	token, err = utils.GenerateToken(req.Name)
 	if err != nil {
-		return loginDetails, err
+		return loginDetails, *helper.ErrorInternalSystemError("Error while generating token : " + err.Error())
 	}
 	loginDetails.Token = token
 	err = s.redisClient.Set(req.Name, token, 0).Err()
 	if err != nil {
-		return loginDetails, err
+		return loginDetails, *helper.ErrorInternalSystemError("Error while setting token in redis cache : " + err.Error())
 	}
-	return loginDetails, nil
+	return loginDetails, models.EcomError{}
 }
