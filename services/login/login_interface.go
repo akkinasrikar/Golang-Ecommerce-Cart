@@ -20,6 +20,7 @@ func NewLoginService(respoService repositories.RepositoryInterface, redisClient 
 	}
 }
 
+//go:generate mockgen -package mocks -source=login_interface.go -destination=mocks/login_interface_mocks.go
 type LoginService interface {
 	SignUp(req entities.SignUp) (responses.SingUp, models.EcomError)
 	Login(req entities.Login) (responses.Login, models.EcomError)
