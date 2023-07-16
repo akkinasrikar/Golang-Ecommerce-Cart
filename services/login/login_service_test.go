@@ -94,7 +94,6 @@ func Test_loginService_Login(t *testing.T) {
 		fields          fields
 		args            args
 		mockRepoService func(ctrl *gomock.Controller) *mocks.MockRepositoryInterface
-		mockRedisClient func(ctrl *gomock.Controller) *utils.MockClient
 		want            responses.Login
 		want1           models.EcomError
 	}{
