@@ -1,0 +1,7 @@
+SHELL := /bin/bash
+APP_EXECUTABLE="./out/$(APP_NAME)"
+ALL_PACKAGES=$(shell go list ./... | grep -v /vendor | uniq)
+
+.PHONY: generate-mocks
+generate-mocks:
+	go generate ./...
