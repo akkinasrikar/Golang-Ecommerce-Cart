@@ -2,6 +2,7 @@ package helper
 
 import (
 	"errors"
+	"net/url"
 
 	"github.com/akkinasrikar/ecommerce-cart/constants"
 	"github.com/akkinasrikar/ecommerce-cart/models"
@@ -41,4 +42,13 @@ func SetInternalError(errMsg string) models.EcomErrorResponse {
 	return models.EcomErrorResponse{
 		ErrorType: zwErrBody,
 	}
+}
+
+func GetValidationEcomError(e url.Values) models.EcomError {
+	var ecomErr models.EcomError
+	for key, value := range e {
+		ecomErr = *ErrorParamMissingOrInvalid(value[0], key)
+		break
+	}
+	return ecomErr
 }
