@@ -8,7 +8,6 @@ import (
 	reflect "reflect"
 
 	models "github.com/akkinasrikar/ecommerce-cart/models"
-	entities "github.com/akkinasrikar/ecommerce-cart/models/entities"
 	responses "github.com/akkinasrikar/ecommerce-cart/models/responses"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -37,7 +36,7 @@ func (m *MockLoginService) EXPECT() *MockLoginServiceMockRecorder {
 }
 
 // Login mocks base method.
-func (m *MockLoginService) Login(req entities.Login) (responses.Login, models.EcomError) {
+func (m *MockLoginService) Login(req models.Login) (responses.Login, models.EcomError) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Login", req)
 	ret0, _ := ret[0].(responses.Login)
@@ -52,7 +51,7 @@ func (mr *MockLoginServiceMockRecorder) Login(req interface{}) *gomock.Call {
 }
 
 // SignUp mocks base method.
-func (m *MockLoginService) SignUp(req entities.SignUp) (responses.SingUp, models.EcomError) {
+func (m *MockLoginService) SignUp(req models.SignUp) (responses.SingUp, models.EcomError) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SignUp", req)
 	ret0, _ := ret[0].(responses.SingUp)

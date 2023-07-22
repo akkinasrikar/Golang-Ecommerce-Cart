@@ -11,13 +11,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *loginService) SignUp(req entities.SignUp) (responses.SingUp, models.EcomError) {
+func (s *loginService) SignUp(req models.SignUp) (responses.SingUp, models.EcomError) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return responses.SingUp{}, *helper.ErrorInternalSystemError("Error while hashing password : " + err.Error())
 	}
-	req.Password = string(hashedPassword)
-	userDetails, ecomErr := s.repoService.SignUp(req)
+	userReq := entities.SignUp {
+		Name:     req.Name,
+		Email:    req.Email,
+		Password: string(hashedPassword),
+	}
+	userDetails, ecomErr := s.repoService.SignUp(userReq)
 	if ecomErr.Message != nil {
 		return responses.SingUp{}, *helper.ErrorInternalSystemError("Error while signing up : " + ecomErr.Message.Error())
 	}
@@ -28,10 +32,14 @@ func (s *loginService) SignUp(req entities.SignUp) (responses.SingUp, models.Eco
 	}, models.EcomError{}
 }
 
-func (s *loginService) Login(req entities.Login) (responses.Login, models.EcomError) {
+func (s *loginService) Login(req models.Login) (responses.Login, models.EcomError) {
 	var loginDetails responses.Login
 	loginDetails.UserName = req.Name
-	_, ecomErr := s.repoService.Login(req)
+	userReq := entities.Login{
+		Name:     req.Name,
+		Password: req.Password,
+	}
+	_, ecomErr := s.repoService.Login(userReq)
 	if ecomErr.Message != nil {
 		return responses.Login{}, *helper.ErrorInternalSystemError("Error while logging in : " + ecomErr.Message.Error())
 	}
