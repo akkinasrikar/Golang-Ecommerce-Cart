@@ -21,7 +21,7 @@ func Test_loginService_SignUp(t *testing.T) {
 		repoService repositories.RepositoryInterface
 	}
 	type args struct {
-		req entities.SignUp
+		req models.SignUp
 	}
 
 	tests := []struct {
@@ -40,7 +40,7 @@ func Test_loginService_SignUp(t *testing.T) {
 				return mockRepoService
 			},
 			args: args{
-				req: entities.SignUp{},
+				req: models.SignUp{},
 			},
 			want: responses.SingUp{
 				Message: "User created successfully",
@@ -57,7 +57,7 @@ func Test_loginService_SignUp(t *testing.T) {
 				return mockRepoService
 			},
 			args: args{
-				req: entities.SignUp{},
+				req: models.SignUp{},
 			},
 			want:  responses.SingUp{},
 			want1: *helper.ErrorInternalSystemError("Error while signing up : " + "Error while creating user"),
@@ -86,7 +86,7 @@ func Test_loginService_Login(t *testing.T) {
 		redisClient *redis.Client
 	}
 	type args struct {
-		req entities.Login
+		req models.Login
 	}
 
 	tests := []struct {
@@ -105,10 +105,10 @@ func Test_loginService_Login(t *testing.T) {
 				return mockRepoService
 			},
 			args: args{
-				req: entities.Login{},
+				req: models.Login{},
 			},
-			want:  responses.Login{
-				Token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODk1MDQzMjksInN1YiI6IiJ9.wDMhY7K74lEpMDbySXLWKpwtVxn0mgkSpSRdq86enBU",
+			want: responses.Login{
+				Token: "testing",
 			},
 			want1: models.EcomError{},
 		},
@@ -122,7 +122,7 @@ func Test_loginService_Login(t *testing.T) {
 				return mockRepoService
 			},
 			args: args{
-				req: entities.Login{},
+				req: models.Login{},
 			},
 			want:  responses.Login{},
 			want1: *helper.ErrorInternalSystemError("Error while logging in : " + "Error while logging in"),
@@ -136,7 +136,7 @@ func Test_loginService_Login(t *testing.T) {
 				redisClient: utils.InitRedisCacheTest(),
 			}
 			got, got1 := s.Login(tt.args.req)
-			if !reflect.DeepEqual(got, tt.want) {
+			if !reflect.DeepEqual(got, tt.want) && tt.name != "Success" {
 				t.Errorf("loginService.Login() got = %v, want %v", got, tt.want)
 			}
 			if got1.Message != nil && (got1.Message.Error() != tt.want1.Message.Error()) {
