@@ -16,14 +16,12 @@ import (
 type LoginHandler struct {
 	loginService   services.LoginService
 	loginValidator validator.LoginValidator
-	repoService    *gorm.DB
 }
 
 func NewLoginHandler(loginService services.LoginService, loginValidator validator.LoginValidator, db *gorm.DB) *LoginHandler {
 	return &LoginHandler{
 		loginService:   loginService,
 		loginValidator: loginValidator,
-		repoService:    db,
 	}
 }
 
