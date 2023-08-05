@@ -2,6 +2,7 @@ package database
 
 import "gorm.io/gorm"
 
+//go:generate mockgen -package mock -source=db.go -destination=mock/db.go
 type DB interface {
 	Create(interface{}) error
 	Where(interface{}, ...interface{}) DB
