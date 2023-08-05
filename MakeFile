@@ -1,7 +1,10 @@
-SHELL := /bin/bash
-APP_EXECUTABLE="./out/$(APP_NAME)"
-ALL_PACKAGES=$(shell go list ./... | grep -v /vendor | uniq)
+.PHONY: generate-mocks migrateup migratedown
 
-.PHONY: generate-mocks
 generate-mocks:
 	go generate ./...
+
+migrateup:
+	migrate -path database/migration -database "postgres://postgres:postgres@127.0.0.1:5432/ecom?sslmode=disable" -verbose up
+
+migratedown:
+	migrate -path database/migration -database "postgres://postgres:postgres@127.0.0.1:5432/ecom?sslmode=disable" -verbose down
