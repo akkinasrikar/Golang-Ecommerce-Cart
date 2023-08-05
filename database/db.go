@@ -6,6 +6,7 @@ type DB interface {
 	Create(interface{}) error
 	Where(interface{}, ...interface{}) DB
 	First(interface{}, ...interface{}) error
+	Find(interface{}, ...interface{}) (int64, error)
 }
 
 type db struct {
@@ -26,4 +27,9 @@ func (d *db) Where(query interface{}, args ...interface{}) DB {
 
 func (d *db) First(dest interface{}, args ...interface{}) error {
 	return d.DB.First(dest, args...).Error
+}
+
+func (s *db) Find(out interface{}, where ...interface{}) (int64, error) {
+	tx := s.DB.Find(out, where...)
+	return tx.RowsAffected, tx.Error
 }

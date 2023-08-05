@@ -18,9 +18,9 @@ func (v *loginValidator) ValidateSignUp(ctx *gin.Context) (reqBody models.SignUp
 		Data:  &reqBody,
 		Rules: rules,
 		Messages: govalidator.MapData{
-			"name":     []string{"required:Name is required", "between:Name should be between 3 to 20 characters"},
-			"email":    []string{"required:Email is required", "email:Email should be valid"},
-			"password": []string{"required:Password is required", "min:Password should be minimum 8 characters", "max:Password should be maximum 20 characters"},
+			"user_name":  []string{"required:Name is required", "between:Name should be between 3 to 20 characters"},
+			"user_email": []string{"required:Email is required", "email:Email should be valid"},
+			"password":   []string{"required:Password is required", "min:Password should be minimum 8 characters", "max:Password should be maximum 20 characters"},
 		},
 	}
 
@@ -35,9 +35,9 @@ func (v *loginValidator) ValidateSignUp(ctx *gin.Context) (reqBody models.SignUp
 
 func getRulesForSignUp() govalidator.MapData {
 	return govalidator.MapData{
-		"name":     []string{"required", "between:3,20"},
-		"email":    []string{"required", "email"},
-		"password": []string{"required", "min:8", "max:20"},
+		"user_name":  []string{"required", "between:3,20"},
+		"user_email": []string{"required", "email"},
+		"password":   []string{"required", "min:8", "max:20"},
 	}
 }
 
