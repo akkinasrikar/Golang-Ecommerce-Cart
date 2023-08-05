@@ -1,28 +1,81 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
-name: Go
-
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
+name: run tests
 jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [1.19.x]
+        platform: [ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
 
-  build:
-    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: ecom
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
-    - uses: actions/checkout@v3
-
+    # install go
     - name: Set up Go
-      uses: actions/setup-go@v4
+      if: success()
+      uses: actions/setup-go@v3
       with:
-        go-version: '1.20'
+        go-version: ${{ matrix.go-version }}
+    
+    # checkout repo
+    - name: Checkout repo
+      uses: actions/checkout@v3
 
-    - name: Build
-      run: go build -v ./...
+    # lint 
+    - name: Install golint
+      run: go install golang.org/x/lint/golint@latest  
+    - name: Install ReviewDog Tool
+      uses: reviewdog/action-setup@v1
+      with:
+        reviewdog_version: latest    
+            
+    # run tests
+    - name: Test 
+      run: pwd && make test
 
-    - name: Test
-      run: go test -v ./...
+    - name: Quality Check
+      env:
+          TESTCOVERAGE_THRESHOLD: 25
+      run: |
+            echo "Quality Check: checking if test coverage is above threshold.."
+            echo "Threshold             : $TESTCOVERAGE_THRESHOLD %"
+            totalCoverage=`go tool cover -func=c.out | grep total | grep -Eo '[0-9]+\.[0-9]+'`
+            echo "Current test coverage : $totalCoverage %"
+            if (( $(echo "$totalCoverage $TESTCOVERAGE_THRESHOLD" | awk '{print ($1 > $2)}') )); then
+                echo "OK"
+            else
+                echo "Current test coverage is below threshold. Please add more unit tests."
+                echo "Failed"
+                exit 1
+            fi
+    
