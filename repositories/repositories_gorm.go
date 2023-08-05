@@ -17,7 +17,7 @@ func (r *Repository) SignUp(userDetails entities.SignUp) (entities.SignUp, model
 
 func (r *Repository) Login(userDetails entities.Login) (entities.Login, models.EcomError) {
 	var user entities.Login
-	err := r.Db.Table("user_details").Where("name = ? OR email = ?", userDetails.Name, userDetails.Name).First(&user).Error
+	err := r.Db.Table("sign_ups").Where("user_name = ? OR user_email = ?", userDetails.Name, userDetails.Name).First(&user).Error
 	if err != nil {
 		return entities.Login{}, *helper.ErrorInternalSystemError("Error while logging in : " + err.Error())
 	}
