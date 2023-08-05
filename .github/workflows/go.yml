@@ -1,28 +1,53 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
-name: Go
-
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
+name: run tests
 jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [1.19.x]
+        platform: [ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
 
-  build:
-    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
     steps:
-    - uses: actions/checkout@v3
-
+    # install go
     - name: Set up Go
-      uses: actions/setup-go@v4
+      if: success()
+      uses: actions/setup-go@v3
       with:
-        go-version: '1.20'
+        go-version: ${{ matrix.go-version }}
+    
+    # checkout repo
+    - name: Checkout repo
+      uses: actions/checkout@v3
 
-    - name: Build
-      run: go build -v ./...
-
-    - name: Test
+    # lint 
+    - name: Install golint
+      run: go install golang.org/x/lint/golint@latest  
+    - name: Install ReviewDog Tool
+      uses: reviewdog/action-setup@v1
+      with:
+        reviewdog_version: latest    
+            
+    # run tests
+    - name: Test 
       run: go test -v ./...
+
+    
