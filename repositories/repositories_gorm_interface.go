@@ -1,18 +1,18 @@
 package repositories
 
 import (
+	"github.com/akkinasrikar/ecommerce-cart/database"
 	"github.com/akkinasrikar/ecommerce-cart/models"
 	"github.com/akkinasrikar/ecommerce-cart/models/entities"
-	"gorm.io/gorm"
 )
 
 type Repository struct {
-	Db *gorm.DB
+	dbStore database.DB
 }
 
-func NewRepository(db *gorm.DB) RepositoryInterface {
+func NewRepository(dbStore database.DB) RepositoryInterface {
 	return &Repository{
-		Db: db,
+		dbStore: dbStore,
 	}
 }
 

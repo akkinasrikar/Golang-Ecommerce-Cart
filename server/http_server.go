@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/akkinasrikar/ecommerce-cart/database"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"gorm.io/gorm"
@@ -15,7 +16,9 @@ func Init(db *gorm.DB) (*HttpServer, error) {
 	router := gin.Default()
 	server.Router = router
 	redisClient := InitRedisCache()
-	setUpRoutes(router, db, redisClient)
+	// create postgres db connection database.DB
+	dbStore := database.NewDb(db)
+	setUpRoutes(router, dbStore, redisClient)
 	return server, nil
 }
 

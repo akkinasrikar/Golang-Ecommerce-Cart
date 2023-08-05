@@ -1,41 +1,35 @@
-package initializers
+package database
 
-import (
-	"fmt"
+import "gorm.io/gorm"
 
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-)
-
-const (
-	host   = "localhost"
-	port   = 5432
-	user   = "postgres"
-	dbname = "ecom"
-)
-
-var (
-	Db  *gorm.DB
-	err error
-)
-
-func ConnectDataBase() *gorm.DB {
-	psqlconn := fmt.Sprintf("host=%s port=%d user=%s dbname=%s sslmode=disable", host, port, user, dbname)
-	Db, err = gorm.Open(postgres.Open(psqlconn), &gorm.Config{})
-	CheckError(err)
-
-	sqlDB, err := Db.DB()
-	CheckError(err)
-
-	err = sqlDB.Ping()
-	CheckError(err)
-
-	fmt.Println("Successfully connected and AutoMigrated!")
-	return Db
+type DB interface {
+	Create(interface{}) error
+	Where(interface{}, ...interface{}) DB
+	First(interface{}, ...interface{}) error
+	Find(interface{}, ...interface{}) (int64, error)
 }
 
-func CheckError(err error) {
-	if err != nil {
-		panic(err)
-	}
+type db struct {
+	*gorm.DB
+}
+
+func NewDb(gormDB *gorm.DB) *db {
+	return &db{DB: gormDB}
+}
+
+func (d *db) Create(value interface{}) error {
+	return d.DB.Create(value).Error
+}
+
+func (d *db) Where(query interface{}, args ...interface{}) DB {
+	return &db{DB: d.DB.Where(query, args...)}
+}
+
+func (d *db) First(dest interface{}, args ...interface{}) error {
+	return d.DB.First(dest, args...).Error
+}
+
+func (s *db) Find(out interface{}, where ...interface{}) (int64, error) {
+	tx := s.DB.Find(out, where...)
+	return tx.RowsAffected, tx.Error
 }
