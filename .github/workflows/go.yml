@@ -48,7 +48,7 @@ jobs:
             
     # run tests
     - name: Test 
-      run: pwd && make test
+      run: go test -v ./...
 
     - name: Quality Check
       env:
