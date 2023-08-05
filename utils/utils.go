@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"net/http/httptest"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -37,3 +39,9 @@ func InitRedisCacheTest() *redis.Client {
 	}
 	return rdb
 }
+
+func SetContext() *gin.Context {
+	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+	return ctx
+}
+
