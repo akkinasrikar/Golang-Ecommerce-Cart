@@ -1,15 +1,4 @@
-package responses
-
-type SingUp struct {
-	Name    string `json:"name"`
-	Email   string `json:"email"`
-	Message string `json:"message"`
-}
-
-type Login struct {
-	UserName string `json:"username"`
-	Token    string `json:"token"`
-}
+package dto
 
 type Items struct {
 	Id          int     `json:"id"`
