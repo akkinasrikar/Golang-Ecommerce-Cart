@@ -4,9 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"gorm.io/gorm"
-
 	"github.com/akkinasrikar/ecommerce-cart/models"
+	"github.com/akkinasrikar/ecommerce-cart/repositories"
 	services "github.com/akkinasrikar/ecommerce-cart/services/login"
 	"github.com/akkinasrikar/ecommerce-cart/validators/helper"
 	validator "github.com/akkinasrikar/ecommerce-cart/validators/login"
@@ -16,12 +15,14 @@ import (
 type LoginHandler struct {
 	loginService   services.LoginService
 	loginValidator validator.LoginValidator
+	ecomStore      repositories.RepositoryInterface
 }
 
-func NewLoginHandler(loginService services.LoginService, loginValidator validator.LoginValidator, db *gorm.DB) *LoginHandler {
+func NewLoginHandler(loginService services.LoginService, loginValidator validator.LoginValidator, ecomStore repositories.RepositoryInterface) *LoginHandler {
 	return &LoginHandler{
 		loginService:   loginService,
 		loginValidator: loginValidator,
+		ecomStore:      ecomStore,
 	}
 }
 

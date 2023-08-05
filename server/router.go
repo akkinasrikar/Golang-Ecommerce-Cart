@@ -2,18 +2,19 @@ package server
 
 import (
 	"github.com/akkinasrikar/ecommerce-cart/controllers"
+	"github.com/akkinasrikar/ecommerce-cart/database"
 	"github.com/akkinasrikar/ecommerce-cart/middleware"
 	"github.com/akkinasrikar/ecommerce-cart/repositories"
 	servicesLogin "github.com/akkinasrikar/ecommerce-cart/services/login"
 	validatorsLogin "github.com/akkinasrikar/ecommerce-cart/validators/login"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
-	"gorm.io/gorm"
 )
 
-func setUpRoutes(router *gin.Engine, db *gorm.DB, redisClient *redis.Client) {
-	servicesLogin := servicesLogin.NewLoginService(repositories.RepositoryInterface(repositories.NewRepository(db)), redisClient)
-	LoginHandler := controllers.NewLoginHandler(servicesLogin, validatorsLogin.NewValidator(), db)
+func setUpRoutes(router *gin.Engine, db database.DB, redisClient *redis.Client) {
+	ecomStore := repositories.NewRepository(db)
+	servicesLogin := servicesLogin.NewLoginService(ecomStore, redisClient)
+	LoginHandler := controllers.NewLoginHandler(servicesLogin, validatorsLogin.NewValidator(), ecomStore)
 	loginHandler(router, *LoginHandler)
 }
 
