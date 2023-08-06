@@ -3,6 +3,7 @@ package main
 import (
 	golog "log"
 
+	"github.com/akkinasrikar/ecommerce-cart/config"
 	database "github.com/akkinasrikar/ecommerce-cart/database"
 	"github.com/akkinasrikar/ecommerce-cart/server"
 )
@@ -10,6 +11,8 @@ import (
 func main() {
 	db := database.ConnectDataBase()
 	golog.Println("Connected to database")
+	config.Init()
+	golog.Println("Initialized config")
 
 	server, err := server.Init(db)
 	if err != nil {

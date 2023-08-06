@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/akkinasrikar/ecommerce-cart/api/dto"
+	"github.com/akkinasrikar/ecommerce-cart/config"
 	"github.com/akkinasrikar/ecommerce-cart/constants"
 	"github.com/akkinasrikar/ecommerce-cart/models"
 )
@@ -25,7 +26,7 @@ func NewService() Service {
 		Timeout: time.Duration(timeout) * time.Second,
 	}
 	return &service{
-		BaseURL: "https://fakestoreapi.com/",
+		BaseURL: config.FakeStore.BaseUrl,
 		http:    http,
 	}
 }
