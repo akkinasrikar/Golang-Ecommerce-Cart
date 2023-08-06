@@ -11,6 +11,7 @@ import (
 	"github.com/akkinasrikar/ecommerce-cart/models"
 )
 
+//go:generate mockgen -package mocks -source=api_provider_interface.go -destination=mocks/api_provider_mocks.go
 type Service interface {
 	GetItems(ecomCtx context.Context) (dto.ItemsResponse, models.EcomError)
 }
@@ -31,6 +32,7 @@ func NewService() Service {
 	}
 }
 
+//go:generate mockgen -package mocks -source=api_provider_interface.go -destination=mocks/api_provider_mocks.go
 type HttpCall interface {
 	Do(req *http.Request) (*http.Response, error)
 }
