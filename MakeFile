@@ -8,3 +8,6 @@ migrateup:
 
 migratedown:
 	migrate -path database/migration -database "postgres://postgres:postgres@127.0.0.1:5432/ecom?sslmode=disable" -verbose down
+
+forcemigrateup:
+	migrate -path database/migration -database "postgres://postgres:postgres@localhost:5432/ecom?sslmode=disable" -verbose force 1

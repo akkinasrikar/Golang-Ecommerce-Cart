@@ -42,4 +42,5 @@ func productHandler(router *gin.Engine, ecomHandler controllers.ProductHandler) 
 	router.Use(middleware.ValidateJwtAuthToken())
 	router.Use((middleware.TraceIDMiddleware()))
 	router.GET("/products", ecomHandler.GetProducts)
+	
 }
