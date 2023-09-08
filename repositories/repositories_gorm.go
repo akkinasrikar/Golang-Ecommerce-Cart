@@ -14,18 +14,27 @@ func (r *Repository) SignUp(userDetails entities.SignUp) (entities.SignUp, model
 	return userDetails, models.EcomError{}
 }
 
-func (r *Repository) Login(userDetails entities.Login) (entities.Login, models.EcomError) {
+func (r *Repository) Login(userDetails entities.Login) (entities.SignUp, models.EcomError) {
 	var user entities.SignUp
 	_, err := r.dbStore.Where("user_name = ? OR user_email = ?", userDetails.Name, userDetails.Name).Find(&user)
 	if err != nil {
-		return entities.Login{}, *helper.ErrorInternalSystemError(err.Error())
+		return entities.SignUp{}, *helper.ErrorInternalSystemError(err.Error())
 	}
 	if user.Name == "" {
-		return entities.Login{}, *helper.ErrorInternalSystemError("User not found")
+		return entities.SignUp{}, *helper.ErrorInternalSystemError("User not found")
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userDetails.Password))
 	if err != nil {
-		return entities.Login{}, *helper.ErrorInternalSystemError("Password is incorrect")
+		return entities.SignUp{}, *helper.ErrorInternalSystemError("Password is incorrect")
 	}
-	return userDetails, models.EcomError{}
+	return user, models.EcomError{}
+}
+
+func (r *Repository) GetAllProducts() ([]entities.Item, models.EcomError) {
+	var items []entities.Item
+	_, err := r.dbStore.Find(&items)
+	if err != nil {
+		return []entities.Item{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+	return items, models.EcomError{}
 }

@@ -16,10 +16,11 @@ func (s *loginService) SignUp(req models.SignUp) (responses.SingUp, models.EcomE
 	if err != nil {
 		return responses.SingUp{}, *helper.ErrorInternalSystemError("Error while hashing password : " + err.Error())
 	}
-	userReq := entities.SignUp {
+	userReq := entities.SignUp{
 		Name:     req.Name,
 		Email:    req.Email,
 		Password: string(hashedPassword),
+		UserId:   int64(utils.GenerateRandomUserIdNumber()),
 	}
 	userDetails, ecomErr := s.repoService.SignUp(userReq)
 	if ecomErr.Message != nil {
@@ -39,7 +40,7 @@ func (s *loginService) Login(req models.Login) (responses.Login, models.EcomErro
 		Name:     req.Name,
 		Password: req.Password,
 	}
-	_, ecomErr := s.repoService.Login(userReq)
+	userDetails, ecomErr := s.repoService.Login(userReq)
 	if ecomErr.Message != nil {
 		return responses.Login{}, *helper.ErrorInternalSystemError("Error while logging in : " + ecomErr.Message.Error())
 	}
@@ -56,7 +57,7 @@ func (s *loginService) Login(req models.Login) (responses.Login, models.EcomErro
 			return loginDetails, models.EcomError{}
 		}
 	}
-	token, err = utils.GenerateToken(req.Name)
+	token, err = utils.GenerateToken(req.Name, userDetails.UserId)
 	if err != nil {
 		return loginDetails, *helper.ErrorInternalSystemError("Error while generating token : " + err.Error())
 	}

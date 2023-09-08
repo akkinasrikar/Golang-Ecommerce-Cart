@@ -24,7 +24,7 @@ func setUpRoutes(router *gin.Engine, db database.DB, redisClient *redis.Client) 
 
 	apiServices := api.NewService()
 	validatorServices := validator.NewValidator()
-	ecomServices := services.NewService(apiServices)
+	ecomServices := services.NewService(apiServices, ecomStore)
 	ecomHandler := controllers.NewProductHandler(validatorServices, ecomServices)
 	productHandler(router, *ecomHandler)
 }
