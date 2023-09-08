@@ -8,6 +8,7 @@ type DB interface {
 	Where(interface{}, ...interface{}) DB
 	First(interface{}, ...interface{}) error
 	Find(interface{}, ...interface{}) (int64, error)
+	Count(interface{}) int64
 }
 
 type db struct {
@@ -33,4 +34,10 @@ func (d *db) First(dest interface{}, args ...interface{}) error {
 func (s *db) Find(out interface{}, where ...interface{}) (int64, error) {
 	tx := s.DB.Find(out, where...)
 	return tx.RowsAffected, tx.Error
+}
+
+func (s *db) Count(model interface{}) int64 {
+	var count int64
+	s.DB.Model(model).Count(&count)
+	return count
 }
