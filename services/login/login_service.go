@@ -26,6 +26,15 @@ func (s *loginService) SignUp(req models.SignUp) (responses.SingUp, models.EcomE
 	if ecomErr.Message != nil {
 		return responses.SingUp{}, *helper.ErrorInternalSystemError("Error while signing up : " + ecomErr.Message.Error())
 	}
+
+	ecomAccountDetails := entities.EcomUsers{
+		EcomID:      utils.GenerateEcomId(),
+		AccountName: req.Name,
+		UsersID:     userDetails.UserId,
+	}
+
+	_, ecomErr = s.repoService.CreateEcomAccount(ecomAccountDetails)
+
 	return responses.SingUp{
 		Name:    userDetails.Name,
 		Email:   userDetails.Email,

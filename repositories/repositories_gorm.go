@@ -38,3 +38,10 @@ func (r *Repository) GetAllProducts() ([]entities.Item, models.EcomError) {
 	}
 	return items, models.EcomError{}
 }
+
+func (r *Repository) CreateEcomAccount(ecomAccountDetails entities.EcomUsers) (entities.EcomUsers, models.EcomError) {
+	if err := r.dbStore.Create(&ecomAccountDetails); err != nil {
+		return entities.EcomUsers{}, *helper.ErrorInternalSystemError("Error while creating ecom account : " + err.Error())
+	}
+	return ecomAccountDetails, models.EcomError{}
+}

@@ -50,3 +50,16 @@ func SetContext() *gin.Context {
 func GenerateRandomUserIdNumber() int {
 	return 100000 + rand.Intn(899999)
 }
+
+func GenerateRandomString() string {
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	b := make([]rune, 10)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
+}
+
+func GenerateEcomId() string {	
+	return "ecom_" + GenerateRandomString()
+}
