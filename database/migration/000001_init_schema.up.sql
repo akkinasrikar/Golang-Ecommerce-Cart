@@ -60,5 +60,19 @@ CREATE TABLE public.cart_items (
 );
 
 
+CREATE TABLE public.items (
+    item_id int8 NOT NULL,
+    item_title varchar(1000) NOT NULL,
+    item_price DOUBLE PRECISION NOT NULL,
+    item_description varchar(2000) NOT NULL,
+    item_category varchar(1000) NOT NULL,
+    item_image varchar(1000) NOT NULL,
+    item_rating DOUBLE PRECISION NOT NULL,
+    item_count int8 NOT NULL,
+    CONSTRAINT items_item_id_key UNIQUE (item_id)
+);
+
+
+
 
 

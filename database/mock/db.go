@@ -34,6 +34,20 @@ func (m *MockDB) EXPECT() *MockDBMockRecorder {
 	return m.recorder
 }
 
+// Count mocks base method.
+func (m *MockDB) Count(arg0 interface{}) int64 {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Count", arg0)
+	ret0, _ := ret[0].(int64)
+	return ret0
+}
+
+// Count indicates an expected call of Count.
+func (mr *MockDBMockRecorder) Count(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Count", reflect.TypeOf((*MockDB)(nil).Count), arg0)
+}
+
 // Create mocks base method.
 func (m *MockDB) Create(arg0 interface{}) error {
 	m.ctrl.T.Helper()

@@ -18,6 +18,10 @@ func Init(db *gorm.DB) (*HttpServer, error) {
 	redisClient := InitRedisCache()
 	// create postgres db connection database.DB
 	dbStore := database.NewDb(db)
+	// check if data is seeded
+	if !database.IsDataSeeded(dbStore) {
+		database.SeedData(dbStore)
+	}
 	setUpRoutes(router, dbStore, redisClient)
 	return server, nil
 }
