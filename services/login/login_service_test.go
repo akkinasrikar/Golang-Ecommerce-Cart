@@ -37,6 +37,7 @@ func Test_loginService_SignUp(t *testing.T) {
 			mockRepoService: func(ctrl *gomock.Controller) *mocks.MockRepositoryInterface {
 				mockRepoService := mocks.NewMockRepositoryInterface(ctrl)
 				mockRepoService.EXPECT().SignUp(gomock.Any()).Return(entities.SignUp{}, models.EcomError{})
+				mockRepoService.EXPECT().CreateEcomAccount(gomock.Any()).Return(entities.EcomUsers{}, models.EcomError{})
 				return mockRepoService
 			},
 			args: args{
@@ -101,7 +102,7 @@ func Test_loginService_Login(t *testing.T) {
 			name: "Success",
 			mockRepoService: func(ctrl *gomock.Controller) *mocks.MockRepositoryInterface {
 				mockRepoService := mocks.NewMockRepositoryInterface(ctrl)
-				mockRepoService.EXPECT().Login(gomock.Any()).Return(entities.Login{}, models.EcomError{})
+				mockRepoService.EXPECT().Login(gomock.Any()).Return(entities.SignUp{}, models.EcomError{})
 				return mockRepoService
 			},
 			args: args{
@@ -116,7 +117,7 @@ func Test_loginService_Login(t *testing.T) {
 			name: "Failure at service layer",
 			mockRepoService: func(ctrl *gomock.Controller) *mocks.MockRepositoryInterface {
 				mockRepoService := mocks.NewMockRepositoryInterface(ctrl)
-				mockRepoService.EXPECT().Login(gomock.Any()).Return(entities.Login{}, models.EcomError{
+				mockRepoService.EXPECT().Login(gomock.Any()).Return(entities.SignUp{}, models.EcomError{
 					Message: errors.New("Error while logging in"),
 				})
 				return mockRepoService
