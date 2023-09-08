@@ -4,28 +4,14 @@ import (
 	"context"
 
 	"github.com/akkinasrikar/ecommerce-cart/models"
-	"github.com/akkinasrikar/ecommerce-cart/models/responses"
+	"github.com/akkinasrikar/ecommerce-cart/models/entities"
 )
 
-func (p *products) GetProducts(ctx context.Context) (responses.ItemsResponse, models.EcomError) {
-	var itemsResponse responses.ItemsResponse
-	resp, err := p.APIProvider.GetItems(ctx)
+func (p *products) GetProducts(ctx context.Context) ([]entities.Item, models.EcomError) {
+	var items []entities.Item
+	items, err := p.Store.GetAllProducts()
 	if err.Message != nil {
-		return itemsResponse, err
+		return items, err
 	}
-	for _, item := range resp {
-		itemsResponse = append(itemsResponse, responses.Items{
-			Id:          item.Id,
-			Title:       item.Title,
-			Price:       item.Price,
-			Description: item.Description,
-			Category:    item.Category,
-			Image:       item.Image,
-			Rating: responses.Rating{
-				Rate:  item.Rating.Rate,
-				Count: item.Rating.Count,
-			},
-		})
-	}
-	return itemsResponse, models.EcomError{}
+	return items, models.EcomError{}
 }

@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/akkinasrikar/ecommerce-cart/repositories"
 	services "github.com/akkinasrikar/ecommerce-cart/services/products"
 	validator "github.com/akkinasrikar/ecommerce-cart/validators"
 	"github.com/akkinasrikar/ecommerce-cart/validators/helper"
@@ -12,6 +13,7 @@ import (
 type ProductHandler struct {
 	productValidator validator.Validator
 	ecomService      services.Products
+	store            repositories.RepositoryInterface
 }
 
 func NewProductHandler(productValidator validator.Validator, ecomService services.Products) *ProductHandler {
