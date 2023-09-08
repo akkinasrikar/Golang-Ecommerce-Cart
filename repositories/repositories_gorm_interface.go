@@ -21,4 +21,5 @@ type RepositoryInterface interface {
 	SignUp(userDetails entities.SignUp) (entities.SignUp, models.EcomError)
 	Login(userDetails entities.Login) (entities.SignUp, models.EcomError)
 	GetAllProducts() ([]entities.Item, models.EcomError)
+	CreateEcomAccount(ecomAccountDetails entities.EcomUsers) (entities.EcomUsers, models.EcomError)
 }

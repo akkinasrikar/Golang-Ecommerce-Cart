@@ -35,6 +35,21 @@ func (m *MockRepositoryInterface) EXPECT() *MockRepositoryInterfaceMockRecorder 
 	return m.recorder
 }
 
+// CreateEcomAccount mocks base method.
+func (m *MockRepositoryInterface) CreateEcomAccount(ecomAccountDetails entities.EcomUsers) (entities.EcomUsers, models.EcomError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateEcomAccount", ecomAccountDetails)
+	ret0, _ := ret[0].(entities.EcomUsers)
+	ret1, _ := ret[1].(models.EcomError)
+	return ret0, ret1
+}
+
+// CreateEcomAccount indicates an expected call of CreateEcomAccount.
+func (mr *MockRepositoryInterfaceMockRecorder) CreateEcomAccount(ecomAccountDetails interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEcomAccount", reflect.TypeOf((*MockRepositoryInterface)(nil).CreateEcomAccount), ecomAccountDetails)
+}
+
 // GetAllProducts mocks base method.
 func (m *MockRepositoryInterface) GetAllProducts() ([]entities.Item, models.EcomError) {
 	m.ctrl.T.Helper()
