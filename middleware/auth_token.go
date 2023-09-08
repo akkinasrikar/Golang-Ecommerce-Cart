@@ -67,7 +67,9 @@ func setEcomCtx(ecomCtx context.Context, tokenClaims jwt.Claims, header models.A
 	authData.Authorization = header.Authorization
 	authData.ISsandBox = header.ISsandBox
 	sub := tokenClaims.(jwt.MapClaims)["sub"].(string)
+	usersId := tokenClaims.(jwt.MapClaims)["usersId"].(float64)
 	authData.UserName = sub
+	authData.UsersId = int64(usersId)
 	ecomCtxUpdated := context.Background()
 	ecomCtxUpdated = context.WithValue(ecomCtxUpdated, models.EcomctxKey("AuthData"), authData)
 	return ecomCtxUpdated
