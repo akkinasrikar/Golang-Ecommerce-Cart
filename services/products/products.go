@@ -15,3 +15,12 @@ func (p *products) GetProducts(ctx context.Context) ([]entities.Item, models.Eco
 	}
 	return items, models.EcomError{}
 }
+
+func (p *products) GetUserDetails(ctx context.Context) (entities.EcomUsers, models.EcomError) {
+	var user entities.EcomUsers
+	user, err := p.Store.GetUserDetails(ctx)
+	if err.Message != nil {
+		return user, err
+	}
+	return user, models.EcomError{}
+}

@@ -11,6 +11,7 @@ import (
 
 type Products interface {
 	GetProducts(context.Context) ([]entities.Item, models.EcomError)
+	GetUserDetails(context.Context) (entities.EcomUsers, models.EcomError)
 }
 
 type products struct {

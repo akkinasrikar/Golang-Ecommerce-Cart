@@ -8,6 +8,7 @@ import (
 
 type Validator interface {
 	ValidateGetProductReq(context.Context) models.EcomError
+	ValidateGetUserDetailsReq(context.Context) models.EcomError
 }
 
 type validator struct{}

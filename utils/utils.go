@@ -12,9 +12,9 @@ import (
 
 func GenerateToken(Username string, UserId int64) (string, error) {
 	claims := jwt.MapClaims{
-		"sub": Username,
+		"sub":     Username,
 		"usersId": UserId,
-		"exp": time.Now().Add(time.Minute * 15).Unix(),
+		"exp":     time.Now().Add(time.Minute * 15).Unix(),
 	}
 
 	signingMethod := jwt.SigningMethodHS256
@@ -52,7 +52,7 @@ func GenerateRandomUserIdNumber() int {
 }
 
 func GenerateRandomString() string {
-	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	letters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	b := make([]rune, 10)
 	for i := range b {
 		b[i] = letters[rand.Intn(len(letters))]
@@ -60,6 +60,6 @@ func GenerateRandomString() string {
 	return string(b)
 }
 
-func GenerateEcomId() string {	
+func GenerateEcomId() string {
 	return "ecom_" + GenerateRandomString()
 }

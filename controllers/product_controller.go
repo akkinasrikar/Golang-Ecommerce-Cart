@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/akkinasrikar/ecommerce-cart/repositories"
@@ -31,6 +32,24 @@ func (ph *ProductHandler) GetProducts(ctx *gin.Context) {
 		return
 	}
 	resp, err := ph.ecomService.GetProducts(ctx)
+	if err.Message != nil {
+		ecomErr := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(ecomErr.ErrorType.Code), &ecomErr)
+		return
+	}
+	ctx.JSON(http.StatusOK, resp)
+}
+
+func (ph *ProductHandler) GetUserDetails(ctx *gin.Context) {
+	ecomError := ph.productValidator.ValidateGetUserDetailsReq(ctx)
+	if ecomError.Message != nil {
+		ecomError := helper.SetInternalError(ecomError.Message.Error())
+		ctx.JSON(int(ecomError.ErrorType.Code), &ecomError)
+		return
+	}
+	ecomGinCtx, _ := ctx.Get("EcomCtx")
+	ecomCtx := ecomGinCtx.(context.Context)
+	resp, err := ph.ecomService.GetUserDetails(ecomCtx)
 	if err.Message != nil {
 		ecomErr := helper.SetInternalError(err.Message.Error())
 		ctx.JSON(int(ecomErr.ErrorType.Code), &ecomErr)
