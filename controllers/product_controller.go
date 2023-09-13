@@ -57,3 +57,21 @@ func (ph *ProductHandler) GetUserDetails(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, resp)
 }
+
+func (ph *ProductHandler) CardDetails(ctx *gin.Context) {
+	req, ecomError := ph.productValidator.ValidateCardDetailsReq(ctx)
+	if ecomError.Message != nil {
+		ecomError := helper.SetInternalError(ecomError.Message.Error())
+		ctx.JSON(int(ecomError.ErrorType.Code), &ecomError)
+		return
+	}
+	ecomGinCtx, _ := ctx.Get("EcomCtx")
+	ecomCtx := ecomGinCtx.(context.Context)
+	resp, err := ph.ecomService.CardDetails(ecomCtx, req)
+	if err.Message != nil {
+		ecomErr := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(ecomErr.ErrorType.Code), &ecomErr)
+		return
+	}
+	ctx.JSON(http.StatusOK, resp)
+}
