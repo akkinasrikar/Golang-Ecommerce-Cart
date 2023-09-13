@@ -63,3 +63,7 @@ func GenerateRandomString() string {
 func GenerateEcomId() string {
 	return "ecom_" + GenerateRandomString()
 }
+
+func GenerateCardId() string {
+	return "card_" + GenerateRandomString()
+}

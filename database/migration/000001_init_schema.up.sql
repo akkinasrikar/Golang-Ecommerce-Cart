@@ -16,6 +16,11 @@ CREATE TABLE public.ecom_users (
     CONSTRAINT ecom_users_pkey PRIMARY KEY (ecom_id)
 );
 
+CREATE TABLE public.card_details (
+    encrypted_data varchar(5000) NOT NULL,
+    ecom_id varchar(255) NOT NULL
+);
+
 CREATE TABLE public.orders (
     order_id varchar(255) NOT NULL,
     order_status varchar(255) NOT NULL,
@@ -57,8 +62,4 @@ CREATE TABLE public.items (
     item_count int8 NOT NULL,
     CONSTRAINT items_item_id_key UNIQUE (item_id)
 );
-
-
-
-
 

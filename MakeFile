@@ -11,3 +11,4 @@ migratedown:
 
 forcemigrateup:
 	migrate -path database/migration -database "postgres://postgres:postgres@localhost:5432/ecom?sslmode=disable" -verbose force 1
+

@@ -12,6 +12,7 @@ import (
 type Products interface {
 	GetProducts(context.Context) ([]entities.Item, models.EcomError)
 	GetUserDetails(context.Context) (entities.EcomUsers, models.EcomError)
+	CardDetails(context.Context, models.CardDetails) (models.CardDetails, models.EcomError)
 }
 
 type products struct {

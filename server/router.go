@@ -43,5 +43,6 @@ func productHandler(router *gin.Engine, ecomHandler controllers.ProductHandler) 
 	router.Use((middleware.TraceIDMiddleware()))
 	router.GET("/user", ecomHandler.GetUserDetails)
 	router.GET("/products", ecomHandler.GetProducts)
+	router.POST("/card-details", ecomHandler.CardDetails)
 	
 }

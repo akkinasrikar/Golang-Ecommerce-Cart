@@ -57,3 +57,10 @@ func (r *Repository) GetUserDetails(ecomCtx context.Context) (entities.EcomUsers
 	}
 	return user, models.EcomError{}
 }
+
+func (r *Repository) CreateCardDetails(cardDetails entities.CardDetails) (entities.CardDetails, models.EcomError) {
+	if err := r.dbStore.Create(&cardDetails); err != nil {
+		return entities.CardDetails{}, *helper.ErrorInternalSystemError("Error while creating card details : " + err.Error())
+	}
+	return cardDetails, models.EcomError{}
+}
