@@ -64,3 +64,13 @@ func (r *Repository) CreateCardDetails(cardDetails entities.CardDetails) (entiti
 	}
 	return cardDetails, models.EcomError{}
 }
+
+func (r *Repository) GetCardDetails(userDetails entities.EcomUsers) ([]entities.CardDetails, models.EcomError) {
+	var cardDetails []entities.CardDetails
+	_, err := r.dbStore.Where("ecom_id = ?", userDetails.EcomID).Find(&cardDetails)
+	if err != nil {
+		return []entities.CardDetails{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+	
+	return cardDetails, models.EcomError{}
+}

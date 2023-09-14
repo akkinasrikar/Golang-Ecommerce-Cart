@@ -23,3 +23,7 @@ func (v *validator) ValidateCardDetailsReq(ctx *gin.Context) (req models.CardDet
 	}
 	return req, models.EcomError{}
 }
+
+func (v *validator) ValidateGetCardDetailsReq(ctx *gin.Context) models.EcomError {
+	return models.EcomError{}
+}

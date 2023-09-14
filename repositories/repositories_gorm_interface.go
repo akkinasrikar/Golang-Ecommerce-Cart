@@ -26,4 +26,5 @@ type RepositoryInterface interface {
 	CreateEcomAccount(ecomAccountDetails entities.EcomUsers) (entities.EcomUsers, models.EcomError)
 	GetUserDetails(ecomCtx context.Context) (entities.EcomUsers, models.EcomError)
 	CreateCardDetails(cardDetails entities.CardDetails) (entities.CardDetails, models.EcomError)
+	GetCardDetails(userDetails entities.EcomUsers) ([]entities.CardDetails, models.EcomError)
 }
