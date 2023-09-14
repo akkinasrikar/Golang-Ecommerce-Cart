@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/akkinasrikar/ecommerce-cart/config"
 	"github.com/akkinasrikar/ecommerce-cart/models"
 	"github.com/akkinasrikar/ecommerce-cart/models/entities"
 	"github.com/akkinasrikar/ecommerce-cart/utils"
@@ -40,7 +41,7 @@ func (p *products) CardDetails(ctx context.Context, req models.CardDetails) (mod
 		return req, *helper.ErrorInternalSystemError(err.Error())
 	}
 
-	encyptedData, err := utils.EncryptData(jsonReq)
+	encyptedData, err := utils.EncryptData(jsonReq, config.FakeStore.PublicKey)
 	if err != nil {
 		return req, *helper.ErrorInternalSystemError(err.Error())
 	}
@@ -56,4 +57,34 @@ func (p *products) CardDetails(ctx context.Context, req models.CardDetails) (mod
 	}
 
 	return req, models.EcomError{}
+}
+
+func (p *products) GetCardDetails(ctx context.Context) ([]models.CardDetails, models.EcomError) {
+	
+	var decryptedCardDetails []models.CardDetails
+
+	userDetails, ecomErr := p.Store.GetUserDetails(ctx)
+	if ecomErr.Message != nil {
+		return []models.CardDetails{}, ecomErr
+	}
+	
+	var cardDetails []entities.CardDetails
+	cardDetails, err := p.Store.GetCardDetails(userDetails)
+	if err.Message != nil {
+		return []models.CardDetails{}, err
+	}
+
+	for _, cardDetail := range cardDetails {
+		decryptedData, err := utils.DecryptData([]byte(cardDetail.EncryptedData), config.FakeStore.PrivateKey)
+		if err != nil {
+			return []models.CardDetails{}, *helper.ErrorInternalSystemError(err.Error())
+		}
+		var decryptedCardDetail models.CardDetails
+		err = json.Unmarshal(decryptedData, &decryptedCardDetail)
+		if err != nil {
+			return []models.CardDetails{}, *helper.ErrorInternalSystemError(err.Error())
+		}
+		decryptedCardDetails = append(decryptedCardDetails, decryptedCardDetail)
+	}
+	return decryptedCardDetails, models.EcomError{}
 }

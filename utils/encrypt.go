@@ -3,24 +3,19 @@ package utils
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	"crypto/sha512"
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
 	"errors"
-	"os"
 )
 
-func loadPublicCertificate() (string, error) {
-	// get root path
-	publicCertificate, err := os.ReadFile("certificates/public.cer")
+func parsePublicKeyFromCertificate(key string) (*rsa.PublicKey, error) {
+	cer, err := base64.StdEncoding.DecodeString(key)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return string(publicCertificate), nil
-}
-
-func parsePublicKeyFromCertificate(cer string) (*rsa.PublicKey, error) {
-	block, _ := pem.Decode([]byte(cer))
+	block, _ := pem.Decode(cer)
 	if block == nil {
 		return nil, errors.New("failed to parse PEM block containing the public key")
 	}
@@ -31,16 +26,13 @@ func parsePublicKeyFromCertificate(cer string) (*rsa.PublicKey, error) {
 	return publicKey.(*rsa.PublicKey), nil
 }
 
-func EncryptData(data []byte) (string, error) {
-	publicCertificate, err := loadPublicCertificate()
+func EncryptData(data []byte, key string) (string, error) {
+	publicKey, err := parsePublicKeyFromCertificate(key)
 	if err != nil {
 		return "", err
 	}
-	publicKey, err := parsePublicKeyFromCertificate(publicCertificate)
-	if err != nil {
-		return "", err
-	}
-	encryptedData, err := rsa.EncryptPKCS1v15(rand.Reader, publicKey, data)
+	hash := sha512.New()
+	encryptedData, err := rsa.EncryptOAEP(hash, rand.Reader, publicKey, data, nil)
 	if err != nil {
 		return "", err
 	}
