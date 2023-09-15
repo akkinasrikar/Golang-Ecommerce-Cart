@@ -14,4 +14,5 @@ var ErrorCode = struct {
 	SERVICE_PROVIDER_ERROR:       "service_provider_error",
 	PARAMETER_UNKNOWN:            "parameter_unknown",
 	HEADER_MISSING_OR_INVALID:    "header_missing_or_invalid",
+	
 }

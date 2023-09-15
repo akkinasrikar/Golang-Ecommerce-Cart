@@ -27,32 +27,32 @@ func NewLoginHandler(loginService services.LoginService, loginValidator validato
 }
 
 func (lh *LoginHandler) SignUp(ctx *gin.Context) {
-	req, ecomError := lh.loginValidator.ValidateSignUp(ctx)
-	if ecomError.Message != nil {
-		ecomError := helper.SetInternalError(ecomError.Message.Error())
-		ctx.JSON(int(ecomError.ErrorType.Code), &ecomError)
+	req, err := lh.loginValidator.ValidateSignUp(ctx)
+	if err.Message != nil {
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
 		return
 	}
 	resp, err := lh.loginService.SignUp(req)
 	if err.Message != nil {
-		ecomErr := helper.SetInternalError(err.Message.Error())
-		ctx.JSON(int(ecomErr.ErrorType.Code), &ecomErr)
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
 		return
 	}
 	ctx.JSON(http.StatusOK, resp)
 }
 
 func (lh *LoginHandler) Login(ctx *gin.Context) {
-	req, ecomError := lh.loginValidator.ValidateLogin(ctx)
-	if ecomError.Message != nil {
-		ecomError := helper.SetInternalError(ecomError.Message.Error())
-		ctx.JSON(int(ecomError.ErrorType.Code), &ecomError)
+	req, err := lh.loginValidator.ValidateLogin(ctx)
+	if err.Message != nil {
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
 		return
 	}
 	resp, err := lh.loginService.Login(req)
 	if err.Message != nil {
-		ecomErr := helper.SetInternalError(err.Message.Error())
-		ctx.JSON(int(ecomErr.ErrorType.Code), &ecomErr)
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
 		return
 	}
 	ctx.JSON(http.StatusOK, resp)
