@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
 	"math/rand"
@@ -51,6 +52,14 @@ func InitRedisCacheTest() *redis.Client {
 
 func SetContext() *gin.Context {
 	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+	return ctx
+}
+
+func SetContextWithAuthData() context.Context {
+	var authData models.AuthData
+	authData.UsersId = int64(1234)
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, models.EcomctxKey("AuthData"), authData)
 	return ctx
 }
 
