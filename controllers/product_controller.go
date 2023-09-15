@@ -25,26 +25,26 @@ func NewProductHandler(productValidator validator.Validator, ecomService service
 }
 
 func (ph *ProductHandler) GetProducts(ctx *gin.Context) {
-	ecomError := ph.productValidator.ValidateGetProductReq(ctx)
-	if ecomError.Message != nil {
-		ecomError := helper.SetInternalError(ecomError.Message.Error())
-		ctx.JSON(int(ecomError.ErrorType.Code), &ecomError)
+	err := ph.productValidator.ValidateGetProductReq(ctx)
+	if err.Message != nil {
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
 		return
 	}
 	resp, err := ph.ecomService.GetProducts(ctx)
 	if err.Message != nil {
-		ecomErr := helper.SetInternalError(err.Message.Error())
-		ctx.JSON(int(ecomErr.ErrorType.Code), &ecomErr)
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
 		return
 	}
 	ctx.JSON(http.StatusOK, resp)
 }
 
 func (ph *ProductHandler) GetUserDetails(ctx *gin.Context) {
-	ecomError := ph.productValidator.ValidateGetUserDetailsReq(ctx)
-	if ecomError.Message != nil {
-		ecomError := helper.SetInternalError(ecomError.Message.Error())
-		ctx.JSON(int(ecomError.ErrorType.Code), &ecomError)
+	err := ph.productValidator.ValidateGetUserDetailsReq(ctx)
+	if err.Message != nil {
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
 		return
 	}
 	ecomGinCtx, _ := ctx.Get("EcomCtx")
@@ -59,36 +59,36 @@ func (ph *ProductHandler) GetUserDetails(ctx *gin.Context) {
 }
 
 func (ph *ProductHandler) CardDetails(ctx *gin.Context) {
-	req, ecomError := ph.productValidator.ValidateCardDetailsReq(ctx)
-	if ecomError.Message != nil {
-		ecomError := helper.SetInternalError(ecomError.Message.Error())
-		ctx.JSON(int(ecomError.ErrorType.Code), &ecomError)
+	req, err := ph.productValidator.ValidateCardDetailsReq(ctx)
+	if err.Message != nil {
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
 		return
 	}
 	ecomGinCtx, _ := ctx.Get("EcomCtx")
 	ecomCtx := ecomGinCtx.(context.Context)
 	resp, err := ph.ecomService.CardDetails(ecomCtx, req)
 	if err.Message != nil {
-		ecomErr := helper.SetInternalError(err.Message.Error())
-		ctx.JSON(int(ecomErr.ErrorType.Code), &ecomErr)
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
 		return
 	}
 	ctx.JSON(http.StatusOK, resp)
 }
 
 func (ph *ProductHandler) GetCardDetails(ctx *gin.Context) {
-	ecomError := ph.productValidator.ValidateGetCardDetailsReq(ctx)
-	if ecomError.Message != nil {
-		ecomError := helper.SetInternalError(ecomError.Message.Error())
-		ctx.JSON(int(ecomError.ErrorType.Code), &ecomError)
+	err := ph.productValidator.ValidateGetCardDetailsReq(ctx)
+	if err.Message != nil {
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
 		return
 	}
 	ecomGinCtx, _ := ctx.Get("EcomCtx")
 	ecomCtx := ecomGinCtx.(context.Context)
 	resp, err := ph.ecomService.GetCardDetails(ecomCtx)
 	if err.Message != nil {
-		ecomErr := helper.SetInternalError(err.Message.Error())
-		ctx.JSON(int(ecomErr.ErrorType.Code), &ecomErr)
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
 		return
 	}
 	ctx.JSON(http.StatusOK, resp)

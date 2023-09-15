@@ -48,9 +48,9 @@ func (r *Repository) CreateEcomAccount(ecomAccountDetails entities.EcomUsers) (e
 	return ecomAccountDetails, models.EcomError{}
 }
 
-func (r *Repository) GetUserDetails(ecomCtx context.Context) (entities.EcomUsers, models.EcomError) {
+func (r *Repository) GetUserDetails(ctx context.Context) (entities.EcomUsers, models.EcomError) {
 	var user entities.EcomUsers
-	authData := ecomCtx.Value(models.EcomctxKey("AuthData")).(models.AuthData)
+	authData := ctx.Value(models.EcomctxKey("AuthData")).(models.AuthData)
 	_, err := r.dbStore.Where("users_id = ?", authData.UsersId).Find(&user)
 	if err != nil {
 		return entities.EcomUsers{}, *helper.ErrorInternalSystemError(err.Error())

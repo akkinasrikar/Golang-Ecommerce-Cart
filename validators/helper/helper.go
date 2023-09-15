@@ -52,3 +52,12 @@ func GetValidationEcomError(e url.Values) models.EcomError {
 	}
 	return ecomErr
 }
+
+func ErrorUnknownParam(param string) *models.EcomError {
+	return &models.EcomError{
+		Code:    422,
+		Message: errors.New("unknown param"),
+		Type:    "unknown_param",
+		Param:   param,
+	}
+}
