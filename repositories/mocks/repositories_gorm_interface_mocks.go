@@ -36,6 +36,21 @@ func (m *MockRepositoryInterface) EXPECT() *MockRepositoryInterfaceMockRecorder 
 	return m.recorder
 }
 
+// CreateAddress mocks base method.
+func (m *MockRepositoryInterface) CreateAddress(addressDetails entities.DeliveryAddress) (entities.DeliveryAddress, models.EcomError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateAddress", addressDetails)
+	ret0, _ := ret[0].(entities.DeliveryAddress)
+	ret1, _ := ret[1].(models.EcomError)
+	return ret0, ret1
+}
+
+// CreateAddress indicates an expected call of CreateAddress.
+func (mr *MockRepositoryInterfaceMockRecorder) CreateAddress(addressDetails interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAddress", reflect.TypeOf((*MockRepositoryInterface)(nil).CreateAddress), addressDetails)
+}
+
 // CreateCardDetails mocks base method.
 func (m *MockRepositoryInterface) CreateCardDetails(cardDetails entities.CardDetails) (entities.CardDetails, models.EcomError) {
 	m.ctrl.T.Helper()
@@ -64,6 +79,21 @@ func (m *MockRepositoryInterface) CreateEcomAccount(ecomAccountDetails entities.
 func (mr *MockRepositoryInterfaceMockRecorder) CreateEcomAccount(ecomAccountDetails interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEcomAccount", reflect.TypeOf((*MockRepositoryInterface)(nil).CreateEcomAccount), ecomAccountDetails)
+}
+
+// GetAddress mocks base method.
+func (m *MockRepositoryInterface) GetAddress(userDetails entities.EcomUsers) ([]entities.DeliveryAddress, models.EcomError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAddress", userDetails)
+	ret0, _ := ret[0].([]entities.DeliveryAddress)
+	ret1, _ := ret[1].(models.EcomError)
+	return ret0, ret1
+}
+
+// GetAddress indicates an expected call of GetAddress.
+func (mr *MockRepositoryInterfaceMockRecorder) GetAddress(userDetails interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAddress", reflect.TypeOf((*MockRepositoryInterface)(nil).GetAddress), userDetails)
 }
 
 // GetAllProducts mocks base method.

@@ -5,3 +5,4 @@ DROP TABLE IF EXISTS public.wish_list;
 DROP TABLE IF EXISTS public.cart_items;
 DROP TABLE IF EXISTS public.items;
 DROP TABLE IF EXISTS public.card_details;
+DROP TABLE IF EXISTS public.delivery_addresses;

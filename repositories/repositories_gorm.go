@@ -71,6 +71,22 @@ func (r *Repository) GetCardDetails(userDetails entities.EcomUsers) ([]entities.
 	if err != nil {
 		return []entities.CardDetails{}, *helper.ErrorInternalSystemError(err.Error())
 	}
-	
+
 	return cardDetails, models.EcomError{}
+}
+
+func (r *Repository) CreateAddress(addressDetails entities.DeliveryAddress) (entities.DeliveryAddress, models.EcomError) {
+	if err := r.dbStore.Create(&addressDetails); err != nil {
+		return entities.DeliveryAddress{}, *helper.ErrorInternalSystemError("Error while creating address : " + err.Error())
+	}
+	return addressDetails, models.EcomError{}
+}
+
+func (r *Repository) GetAddress(userDetails entities.EcomUsers) ([]entities.DeliveryAddress, models.EcomError) {
+	var addressDetails []entities.DeliveryAddress
+	_, err := r.dbStore.Where("ecom_id = ?", userDetails.EcomID).Find(&addressDetails)
+	if err != nil {
+		return []entities.DeliveryAddress{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+	return addressDetails, models.EcomError{}
 }

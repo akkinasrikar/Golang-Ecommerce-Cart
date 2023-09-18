@@ -60,14 +60,13 @@ func (p *products) CardDetails(ctx context.Context, req models.CardDetails) (mod
 }
 
 func (p *products) GetCardDetails(ctx context.Context) ([]models.CardDetails, models.EcomError) {
-	
 	var decryptedCardDetails []models.CardDetails
 
 	userDetails, ecomErr := p.Store.GetUserDetails(ctx)
 	if ecomErr.Message != nil {
 		return []models.CardDetails{}, ecomErr
 	}
-	
+
 	var cardDetails []entities.CardDetails
 	cardDetails, err := p.Store.GetCardDetails(userDetails)
 	if err.Message != nil {
@@ -87,4 +86,57 @@ func (p *products) GetCardDetails(ctx context.Context) ([]models.CardDetails, mo
 		decryptedCardDetails = append(decryptedCardDetails, decryptedCardDetail)
 	}
 	return decryptedCardDetails, models.EcomError{}
+}
+
+func (p *products) AddAddress(ctx context.Context, req models.Address) (entities.DeliveryAddress, models.EcomError) {
+	userDetails, ecomErr := p.Store.GetUserDetails(ctx)
+	if ecomErr.Message != nil {
+		return entities.DeliveryAddress{}, ecomErr
+	}
+
+	addressObject := entities.DeliveryAddress{
+		EcomID:    userDetails.EcomID,
+		AddressID: utils.GenerateAddressId(),
+		HouseNo:   req.HouseNo,
+		Street:    req.Street,
+		City:      req.City,
+		State:     req.State,
+		Pincode:   req.Pincode,
+	}
+
+	address, ecomErr := p.Store.CreateAddress(addressObject)
+	if ecomErr.Message != nil {
+		return entities.DeliveryAddress{}, ecomErr
+	}
+
+	return address, models.EcomError{}
+}
+
+func (p *products) GetAddress(ctx context.Context) ([]entities.DeliveryAddress, models.EcomError) {
+	var addresses []entities.DeliveryAddress
+
+	userDetails, ecomErr := p.Store.GetUserDetails(ctx)
+	if ecomErr.Message != nil {
+		return []entities.DeliveryAddress{}, ecomErr
+	}
+
+	var addressDetails []entities.DeliveryAddress
+	addressDetails, err := p.Store.GetAddress(userDetails)
+	if err.Message != nil {
+		return []entities.DeliveryAddress{}, err
+	}
+
+	for _, addressDetail := range addressDetails {
+		address := entities.DeliveryAddress{
+			AddressID: addressDetail.AddressID,
+			HouseNo:   addressDetail.HouseNo,
+			Street:    addressDetail.Street,
+			City:      addressDetail.City,
+			State:     addressDetail.State,
+			Pincode:   addressDetail.Pincode,
+			EcomID:    addressDetail.EcomID,
+		}
+		addresses = append(addresses, address)
+	}
+	return addresses, models.EcomError{}
 }

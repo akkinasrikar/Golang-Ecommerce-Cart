@@ -84,6 +84,9 @@ func GenerateCardId() string {
 	return "card_" + GenerateRandomString()
 }
 
+func GenerateAddressId() string {
+	return "address_" + GenerateRandomString()
+}
 func ValidateUnkownParams(ctx *gin.Context, body interface{}) models.EcomError {
 	decoder := json.NewDecoder(ctx.Request.Body)
 	decoder.DisallowUnknownFields()

@@ -21,6 +21,16 @@ CREATE TABLE public.card_details (
     ecom_id varchar(255) NOT NULL
 );
 
+CREATE TABLE public.delivery_addresses (
+    address_id varchar(255) NOT NULL,
+    house_no varchar(255) NOT NULL,
+    street varchar(255) NOT NULL,
+    city varchar(255) NOT NULL,
+    state varchar(255) NOT NULL,
+    pincode varchar(255) NOT NULL,
+    ecom_id varchar(255) NOT NULL
+);
+
 CREATE TABLE public.orders (
     order_id varchar(255) NOT NULL,
     order_status varchar(255) NOT NULL,
