@@ -27,4 +27,6 @@ type RepositoryInterface interface {
 	GetUserDetails(ctx context.Context) (entities.EcomUsers, models.EcomError)
 	CreateCardDetails(cardDetails entities.CardDetails) (entities.CardDetails, models.EcomError)
 	GetCardDetails(userDetails entities.EcomUsers) ([]entities.CardDetails, models.EcomError)
+	CreateAddress(addressDetails entities.DeliveryAddress) (entities.DeliveryAddress, models.EcomError)
+	GetAddress(userDetails entities.EcomUsers) ([]entities.DeliveryAddress, models.EcomError)
 }

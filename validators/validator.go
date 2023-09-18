@@ -58,3 +58,35 @@ func (v *validator) ValidateCardDetailsReq(ctx *gin.Context) (req models.CardDet
 func (v *validator) ValidateGetCardDetailsReq(ctx *gin.Context) models.EcomError {
 	return models.EcomError{}
 }
+
+func (v *validator) ValidateAddAddressReq(ctx *gin.Context) (req models.Address, err models.EcomError) {
+	err = utils.ValidateUnkownParams(ctx, req)
+	if err.Message != nil {
+		return models.Address{}, err
+	}
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		return models.Address{}, *helper.ErrorParamMissingOrInvalid("Invalid request body", "body")
+	}
+
+	rules := govalidator.MapData{
+		"pincode":  []string{"required", "regex:" + constants.RegularExpression.Pincode},
+	}
+
+	opts := govalidator.Options{
+		Data:  &req,
+		Rules: rules,
+	}
+
+	validator := govalidator.New(opts)
+	vErrs := validator.ValidateStruct()
+	if len(vErrs) > 0 {
+		ecomErr := helper.GetValidationEcomError(vErrs)
+		return models.Address{}, ecomErr
+	}
+
+	return req, models.EcomError{}
+}
+
+func (v *validator) ValidateGetAddressReq(ctx *gin.Context) models.EcomError {
+	return models.EcomError{}
+}

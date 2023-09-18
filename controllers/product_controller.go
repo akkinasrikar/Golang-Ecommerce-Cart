@@ -93,3 +93,39 @@ func (ph *ProductHandler) GetCardDetails(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, resp)
 }
+ 
+func (ph *ProductHandler) AddAddress(ctx *gin.Context) {
+	req, err := ph.productValidator.ValidateAddAddressReq(ctx)
+	if err.Message != nil {
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
+		return
+	}
+	ecomGinCtx, _ := ctx.Get("EcomCtx")
+	ecomCtx := ecomGinCtx.(context.Context)
+	resp, err := ph.ecomService.AddAddress(ecomCtx, req)
+	if err.Message != nil {
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
+		return
+	}
+	ctx.JSON(http.StatusOK, resp)
+}
+
+func (ph *ProductHandler) GetAddress(ctx *gin.Context) {
+	err := ph.productValidator.ValidateGetAddressReq(ctx)
+	if err.Message != nil {
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
+		return
+	}
+	ecomGinCtx, _ := ctx.Get("EcomCtx")
+	ecomCtx := ecomGinCtx.(context.Context)
+	resp, err := ph.ecomService.GetAddress(ecomCtx)
+	if err.Message != nil {
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
+		return
+	}
+	ctx.JSON(http.StatusOK, resp)
+}

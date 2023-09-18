@@ -14,6 +14,8 @@ type Products interface {
 	GetUserDetails(context.Context) (entities.EcomUsers, models.EcomError)
 	CardDetails(context.Context, models.CardDetails) (models.CardDetails, models.EcomError)
 	GetCardDetails(context.Context) ([]models.CardDetails, models.EcomError)
+	AddAddress(context.Context, models.Address) (entities.DeliveryAddress, models.EcomError)
+	GetAddress(context.Context) ([]entities.DeliveryAddress, models.EcomError)
 }
 
 type products struct {
