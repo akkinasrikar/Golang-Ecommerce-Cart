@@ -47,5 +47,5 @@ func productHandler(router *gin.Engine, ecomHandler controllers.ProductHandler) 
 	router.GET("/card-details", ecomHandler.GetCardDetails)
 	router.POST("/add-address", ecomHandler.AddAddress)
 	router.GET("/get-address", ecomHandler.GetAddress)
-	
+	router.POST("/cart", ecomHandler.AddOrDeleteToCart)
 }

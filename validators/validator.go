@@ -90,3 +90,32 @@ func (v *validator) ValidateAddAddressReq(ctx *gin.Context) (req models.Address,
 func (v *validator) ValidateGetAddressReq(ctx *gin.Context) models.EcomError {
 	return models.EcomError{}
 }
+
+func (v *validator) ValidateAddToCartReq(ctx *gin.Context) (req models.AddToCart, err models.EcomError) {
+	err = utils.ValidateUnkownParams(ctx, req)
+	if err.Message != nil {
+		return models.AddToCart{}, err
+	}
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		return models.AddToCart{}, *helper.ErrorParamMissingOrInvalid("Invalid request body", "body")
+	}
+
+	rules := govalidator.MapData{
+		"product_id": []string{"required", "regex:" + constants.RegularExpression.ProductID},
+		"action":     []string{"required", "regex:" + constants.RegularExpression.Action},
+	}
+
+	opts := govalidator.Options{
+		Data:  &req,
+		Rules: rules,
+	}
+
+	validator := govalidator.New(opts)
+	vErrs := validator.ValidateStruct()
+	if len(vErrs) > 0 {
+		ecomErr := helper.GetValidationEcomError(vErrs)
+		return models.AddToCart{}, ecomErr
+	}
+
+	return req, models.EcomError{}
+}

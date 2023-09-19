@@ -12,6 +12,7 @@ import (
 
 	"github.com/akkinasrikar/ecommerce-cart/constants"
 	"github.com/akkinasrikar/ecommerce-cart/models"
+	"github.com/akkinasrikar/ecommerce-cart/models/entities"
 	"github.com/akkinasrikar/ecommerce-cart/validators/helper"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
@@ -87,6 +88,7 @@ func GenerateCardId() string {
 func GenerateAddressId() string {
 	return "address_" + GenerateRandomString()
 }
+
 func ValidateUnkownParams(ctx *gin.Context, body interface{}) models.EcomError {
 	decoder := json.NewDecoder(ctx.Request.Body)
 	decoder.DisallowUnknownFields()
@@ -124,4 +126,13 @@ func ValidateCardExpiryDate(expiryDate string) bool {
 		return false
 	}
 	return true
+}
+
+func UnmarshallCartItems(data string) (entities.ItemsInCart, error) {
+	var cartItems entities.ItemsInCart
+	err := json.Unmarshal([]byte(data), &cartItems)
+	if err != nil {
+		return entities.ItemsInCart{}, err
+	}
+	return cartItems, nil
 }

@@ -5,6 +5,7 @@ import "gorm.io/gorm"
 //go:generate mockgen -package mock -source=db.go -destination=mock/db.go
 type DB interface {
 	Create(interface{}) error
+	Updates(interface{}) (int64, error)
 	Where(interface{}, ...interface{}) DB
 	First(interface{}, ...interface{}) error
 	Find(interface{}, ...interface{}) (int64, error)
@@ -40,4 +41,9 @@ func (s *db) Count(model interface{}) int64 {
 	var count int64
 	s.DB.Model(model).Count(&count)
 	return count
+}
+
+func (d *db) Updates(value interface{}) (int64, error) {
+	tx := d.DB.Updates(value)
+	return tx.RowsAffected, tx.Error
 }

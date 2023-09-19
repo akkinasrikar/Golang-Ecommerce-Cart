@@ -1,4 +1,3 @@
-
 CREATE TABLE public.sign_ups (
     user_name varchar(255) NOT NULL,
     user_email varchar(255) NOT NULL,
@@ -12,6 +11,7 @@ CREATE TABLE public.ecom_users (
     account_name varchar(255) NOT NULL,
     wallet_amount int8 NOT NULL DEFAULT 0,
     delivery_address varchar(500) NULL,
+    cart_items varchar(500) NULL,
     users_id int8 NOT NULL,
     CONSTRAINT ecom_users_pkey PRIMARY KEY (ecom_id)
 );
@@ -51,15 +51,6 @@ CREATE TABLE public.wish_list (
     users_id int8 NOT NULL,
     CONSTRAINT wish_list_wish_list_id_key UNIQUE (wish_list_id)
 );
-
-CREATE TABLE public.cart_items (
-    cart_item_id varchar(255) NOT NULL,
-    cart_item jsonb NOT NULL,
-    ecom_id varchar(255) NOT NULL,
-    users_id int8 NOT NULL,
-    CONSTRAINT cart_items_cart_item_id_key UNIQUE (cart_item_id)
-);
-
 
 CREATE TABLE public.items (
     item_id int8 NOT NULL,

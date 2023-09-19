@@ -14,6 +14,7 @@ type Validator interface {
 	ValidateGetCardDetailsReq(ctx *gin.Context) models.EcomError
 	ValidateAddAddressReq(ctx *gin.Context) (models.Address, models.EcomError)
 	ValidateGetAddressReq(ctx *gin.Context) models.EcomError
+	ValidateAddToCartReq(ctx *gin.Context) (models.AddToCart, models.EcomError)
 }
 
 type validator struct{}
