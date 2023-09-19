@@ -135,10 +135,28 @@ func (ph *ProductHandler) AddOrDeleteToCart(ctx *gin.Context) {
 	if err.Message != nil {
 		err := helper.SetInternalError(err.Message.Error())
 		ctx.JSON(int(err.ErrorType.Code), &err)
+		return
 	}
 	ecomGinCtx, _ := ctx.Get("EcomCtx")
 	ecomCtx := ecomGinCtx.(context.Context)
 	resp, err := ph.ecomService.AddOrDeleteToCart(ecomCtx, req)
+	if err.Message != nil {
+		ctx.JSON(int(err.Code), &err)
+		return
+	}
+	ctx.JSON(http.StatusOK, resp)
+}
+
+func (ph *ProductHandler) GetProductsFromCart(ctx *gin.Context) {
+	err := ph.productValidator.ValidateGetProductsFromCartReq(ctx)
+	if err.Message != nil {
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
+		return
+	}
+	ecomGinCtx, _ := ctx.Get("EcomCtx")
+	ecomCtx := ecomGinCtx.(context.Context)
+	resp, err := ph.ecomService.GetProductsFromCart(ecomCtx)
 	if err.Message != nil {
 		ctx.JSON(int(err.Code), &err)
 		return

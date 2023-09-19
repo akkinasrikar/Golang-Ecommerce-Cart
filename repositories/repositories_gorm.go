@@ -106,3 +106,12 @@ func (r *Repository) AddToCart(userDetails entities.EcomUsers, Id int) (entities
 	}
 	return item, models.EcomError{}
 }
+
+func (r *Repository) GetProductFromCart(itemId int) (entities.Item, models.EcomError) {
+	var item entities.Item
+	_, err := r.dbStore.Where("item_id = ?", itemId).Find(&item)
+	if err != nil {
+		return entities.Item{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+	return item, models.EcomError{}
+}

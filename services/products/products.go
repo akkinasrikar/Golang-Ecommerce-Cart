@@ -212,3 +212,24 @@ func (p *products) AddOrDeleteToCart(ctx context.Context, req models.AddToCart) 
 	}
 	return cartResponse, models.EcomError{}
 }
+
+func (p *products) GetProductsFromCart(ctx context.Context) ([]entities.Item, models.EcomError) {
+	var items []entities.Item
+	var cartItems entities.ItemsInCart
+	userDetails, ecomErr := p.Store.GetUserDetails(ctx)
+	if ecomErr.Message != nil {
+		return []entities.Item{}, ecomErr
+	}
+	err := json.Unmarshal([]byte(userDetails.CartItems), &cartItems)
+	if err != nil {
+		return []entities.Item{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+	for _, v := range cartItems.ItemsID {
+		item, ecomErr := p.Store.GetProductFromCart(v)
+		if ecomErr.Message != nil {
+			return []entities.Item{}, ecomErr
+		}
+		items = append(items, item)
+	}
+	return items, models.EcomError{}
+}
