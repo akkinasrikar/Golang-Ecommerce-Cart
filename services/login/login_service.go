@@ -1,6 +1,8 @@
 package services
 
 import (
+	"encoding/json"
+
 	"github.com/akkinasrikar/ecommerce-cart/models"
 	"github.com/akkinasrikar/ecommerce-cart/models/entities"
 	"github.com/akkinasrikar/ecommerce-cart/models/responses"
@@ -27,13 +29,19 @@ func (s *loginService) SignUp(req models.SignUp) (responses.SingUp, models.EcomE
 		return responses.SingUp{}, *helper.ErrorInternalSystemError("Error while signing up : " + ecomErr.Message.Error())
 	}
 
+	var cartItems entities.ItemsInCart
+	itemsInCartJson, _ := json.Marshal(cartItems)
 	ecomAccountDetails := entities.EcomUsers{
 		EcomID:      utils.GenerateEcomId(),
 		AccountName: req.Name,
 		UsersID:     userDetails.UserId,
+		CartItems:   string(itemsInCartJson),
 	}
 
 	_, ecomErr = s.repoService.CreateEcomAccount(ecomAccountDetails)
+	if ecomErr.Message != nil {
+		return responses.SingUp{}, *helper.ErrorInternalSystemError("Error while creating ecom account : " + ecomErr.Message.Error())
+	}
 
 	return responses.SingUp{
 		Name:    userDetails.Name,

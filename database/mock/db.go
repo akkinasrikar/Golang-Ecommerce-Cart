@@ -101,6 +101,21 @@ func (mr *MockDBMockRecorder) First(arg0 interface{}, arg1 ...interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "First", reflect.TypeOf((*MockDB)(nil).First), varargs...)
 }
 
+// Updates mocks base method.
+func (m *MockDB) Updates(arg0 interface{}) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Updates", arg0)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Updates indicates an expected call of Updates.
+func (mr *MockDBMockRecorder) Updates(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Updates", reflect.TypeOf((*MockDB)(nil).Updates), arg0)
+}
+
 // Where mocks base method.
 func (m *MockDB) Where(arg0 interface{}, arg1 ...interface{}) database.DB {
 	m.ctrl.T.Helper()

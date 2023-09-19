@@ -36,6 +36,21 @@ func (m *MockRepositoryInterface) EXPECT() *MockRepositoryInterfaceMockRecorder 
 	return m.recorder
 }
 
+// AddToCart mocks base method.
+func (m *MockRepositoryInterface) AddToCart(userDetails entities.EcomUsers, Id int) (entities.Item, models.EcomError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddToCart", userDetails, Id)
+	ret0, _ := ret[0].(entities.Item)
+	ret1, _ := ret[1].(models.EcomError)
+	return ret0, ret1
+}
+
+// AddToCart indicates an expected call of AddToCart.
+func (mr *MockRepositoryInterfaceMockRecorder) AddToCart(userDetails, Id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddToCart", reflect.TypeOf((*MockRepositoryInterface)(nil).AddToCart), userDetails, Id)
+}
+
 // CreateAddress mocks base method.
 func (m *MockRepositoryInterface) CreateAddress(addressDetails entities.DeliveryAddress) (entities.DeliveryAddress, models.EcomError) {
 	m.ctrl.T.Helper()
@@ -169,4 +184,19 @@ func (m *MockRepositoryInterface) SignUp(userDetails entities.SignUp) (entities.
 func (mr *MockRepositoryInterfaceMockRecorder) SignUp(userDetails interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignUp", reflect.TypeOf((*MockRepositoryInterface)(nil).SignUp), userDetails)
+}
+
+// UpdateEcomAccount mocks base method.
+func (m *MockRepositoryInterface) UpdateEcomAccount(ecomAccountDetails entities.EcomUsers, ecomId string) (entities.EcomUsers, models.EcomError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateEcomAccount", ecomAccountDetails, ecomId)
+	ret0, _ := ret[0].(entities.EcomUsers)
+	ret1, _ := ret[1].(models.EcomError)
+	return ret0, ret1
+}
+
+// UpdateEcomAccount indicates an expected call of UpdateEcomAccount.
+func (mr *MockRepositoryInterfaceMockRecorder) UpdateEcomAccount(ecomAccountDetails, ecomId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateEcomAccount", reflect.TypeOf((*MockRepositoryInterface)(nil).UpdateEcomAccount), ecomAccountDetails, ecomId)
 }

@@ -1,6 +1,5 @@
 package entities
 
-
 type Item struct {
 	ItemID          int     `gorm:"column:item_id;primaryKey"`
 	ItemTitle       string  `gorm:"column:item_title;not null"`
@@ -10,4 +9,8 @@ type Item struct {
 	ItemImage       string  `gorm:"column:item_image;not null"`
 	ItemRating      float64 `gorm:"column:item_rating;not null"`
 	ItemCount       int     `gorm:"column:item_count;not null"`
+}
+
+type ItemsInCart struct {
+	ItemsID []int `json:"items_id"`
 }

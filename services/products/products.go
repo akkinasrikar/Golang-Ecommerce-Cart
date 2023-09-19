@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/akkinasrikar/ecommerce-cart/config"
+	"github.com/akkinasrikar/ecommerce-cart/constants"
 	"github.com/akkinasrikar/ecommerce-cart/models"
 	"github.com/akkinasrikar/ecommerce-cart/models/entities"
 	"github.com/akkinasrikar/ecommerce-cart/utils"
@@ -20,13 +21,24 @@ func (p *products) GetProducts(ctx context.Context) ([]entities.Item, models.Eco
 	return items, models.EcomError{}
 }
 
-func (p *products) GetUserDetails(ctx context.Context) (entities.EcomUsers, models.EcomError) {
-	var user entities.EcomUsers
+func (p *products) GetUserDetails(ctx context.Context) (models.EcomUsers, models.EcomError) {
 	user, err := p.Store.GetUserDetails(ctx)
 	if err.Message != nil {
-		return user, err
+		return models.EcomUsers{}, err
 	}
-	return user, models.EcomError{}
+	cartItems, cartErr := utils.UnmarshallCartItems(user.CartItems)
+	if cartErr != nil {
+		return models.EcomUsers{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+	userDetails := models.EcomUsers{
+		EcomID:          user.EcomID,
+		AccountName:     user.AccountName,
+		WalletAmount:    user.WalletAmount,
+		DeliveryAddress: user.DeliveryAddress,
+		UsersID:         user.UsersID,
+		CartItems:       cartItems.ItemsID,
+	}
+	return userDetails, models.EcomError{}
 }
 
 func (p *products) CardDetails(ctx context.Context, req models.CardDetails) (models.CardDetails, models.EcomError) {
@@ -139,4 +151,64 @@ func (p *products) GetAddress(ctx context.Context) ([]entities.DeliveryAddress, 
 		addresses = append(addresses, address)
 	}
 	return addresses, models.EcomError{}
+}
+
+func (p *products) AddOrDeleteToCart(ctx context.Context, req models.AddToCart) (models.CartResponse, models.EcomError) {
+	var cartItems entities.ItemsInCart
+	var cartResponse models.CartResponse
+	userDetails, ecomErr := p.Store.GetUserDetails(ctx)
+	if ecomErr.Message != nil {
+		return models.CartResponse{}, ecomErr
+	}
+	err := json.Unmarshal([]byte(userDetails.CartItems), &cartItems)
+	if err != nil {
+		return models.CartResponse{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+	if req.Action == constants.ProductConstants.ADDITION {
+		item, ecomErr := p.Store.AddToCart(userDetails, req.ProductId)
+		if ecomErr.Message != nil {
+			return models.CartResponse{}, ecomErr
+		}
+		if item.ItemID == 0 {
+			return models.CartResponse{}, *helper.ErrorParamMissingOrInvalid("invalid product id", "product_id")
+		}
+		cartItems.ItemsID = append(cartItems.ItemsID, item.ItemID)
+		cartItemsJson, err := json.Marshal(cartItems)
+		if err != nil {
+			return models.CartResponse{}, *helper.ErrorInternalSystemError(err.Error())
+		}
+		userDetails.CartItems = string(cartItemsJson)
+		_, ecomErr = p.Store.UpdateEcomAccount(userDetails, userDetails.EcomID)
+		if ecomErr.Message != nil {
+			return models.CartResponse{}, ecomErr
+		}
+		cartResponse.Action = constants.ProductConstants.ADDITION
+		cartResponse.ProductID = req.ProductId
+		cartResponse.Message = "Successfully added to cart!"
+	} else if req.Action == constants.ProductConstants.DELETION {
+		isValidProductId := false
+		for i, v := range cartItems.ItemsID {
+			if v == req.ProductId {
+				cartItems.ItemsID = append(cartItems.ItemsID[:i], cartItems.ItemsID[i+1:]...)
+				isValidProductId = true
+				break
+			}
+		}
+		if !isValidProductId {
+			return models.CartResponse{}, *helper.ErrorParamMissingOrInvalid("invalid product id", "product_id")
+		}
+		cartItemsJson, err := json.Marshal(cartItems)
+		if err != nil {
+			return models.CartResponse{}, *helper.ErrorInternalSystemError(err.Error())
+		}
+		userDetails.CartItems = string(cartItemsJson)
+		_, ecomErr = p.Store.UpdateEcomAccount(userDetails, userDetails.EcomID)
+		if ecomErr.Message != nil {
+			return models.CartResponse{}, ecomErr
+		}
+		cartResponse.Action = constants.ProductConstants.DELETION
+		cartResponse.ProductID = req.ProductId
+		cartResponse.Message = "Successfully deleted from cart!"
+	}
+	return cartResponse, models.EcomError{}
 }

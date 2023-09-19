@@ -129,3 +129,19 @@ func (ph *ProductHandler) GetAddress(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, resp)
 }
+
+func (ph *ProductHandler) AddOrDeleteToCart(ctx *gin.Context) {
+	req, err := ph.productValidator.ValidateAddToCartReq(ctx)
+	if err.Message != nil {
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
+	}
+	ecomGinCtx, _ := ctx.Get("EcomCtx")
+	ecomCtx := ecomGinCtx.(context.Context)
+	resp, err := ph.ecomService.AddOrDeleteToCart(ecomCtx, req)
+	if err.Message != nil {
+		ctx.JSON(int(err.Code), &err)
+		return
+	}
+	ctx.JSON(http.StatusOK, resp)
+}

@@ -48,6 +48,13 @@ func (r *Repository) CreateEcomAccount(ecomAccountDetails entities.EcomUsers) (e
 	return ecomAccountDetails, models.EcomError{}
 }
 
+func (r *Repository) UpdateEcomAccount(ecomAccountDetails entities.EcomUsers, ecomId string) (entities.EcomUsers, models.EcomError) {
+	if _, err := r.dbStore.Where("ecom_id = ?", ecomId).Updates(&ecomAccountDetails); err != nil {
+		return entities.EcomUsers{}, *helper.ErrorInternalSystemError("Error while updating ecom account : " + err.Error())
+	}
+	return ecomAccountDetails, models.EcomError{}
+}
+
 func (r *Repository) GetUserDetails(ctx context.Context) (entities.EcomUsers, models.EcomError) {
 	var user entities.EcomUsers
 	authData := ctx.Value(models.EcomctxKey("AuthData")).(models.AuthData)
@@ -89,4 +96,13 @@ func (r *Repository) GetAddress(userDetails entities.EcomUsers) ([]entities.Deli
 		return []entities.DeliveryAddress{}, *helper.ErrorInternalSystemError(err.Error())
 	}
 	return addressDetails, models.EcomError{}
+}
+
+func (r *Repository) AddToCart(userDetails entities.EcomUsers, Id int) (entities.Item, models.EcomError) {
+	var item entities.Item
+	_, err := r.dbStore.Where("item_id = ?", Id).Find(&item)
+	if err != nil {
+		return entities.Item{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+	return item, models.EcomError{}
 }

@@ -11,11 +11,12 @@ import (
 
 type Products interface {
 	GetProducts(context.Context) ([]entities.Item, models.EcomError)
-	GetUserDetails(context.Context) (entities.EcomUsers, models.EcomError)
+	GetUserDetails(context.Context) (models.EcomUsers, models.EcomError)
 	CardDetails(context.Context, models.CardDetails) (models.CardDetails, models.EcomError)
 	GetCardDetails(context.Context) ([]models.CardDetails, models.EcomError)
 	AddAddress(context.Context, models.Address) (entities.DeliveryAddress, models.EcomError)
 	GetAddress(context.Context) ([]entities.DeliveryAddress, models.EcomError)
+	AddOrDeleteToCart(context.Context, models.AddToCart) (models.CartResponse, models.EcomError)
 }
 
 type products struct {
