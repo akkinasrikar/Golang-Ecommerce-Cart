@@ -17,6 +17,7 @@ type Products interface {
 	AddAddress(context.Context, models.Address) (entities.DeliveryAddress, models.EcomError)
 	GetAddress(context.Context) ([]entities.DeliveryAddress, models.EcomError)
 	AddOrDeleteToCart(context.Context, models.AddToCart) (models.CartResponse, models.EcomError)
+	GetProductsFromCart(context.Context) ([]entities.Item, models.EcomError)
 }
 
 type products struct {

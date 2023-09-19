@@ -31,4 +31,5 @@ type RepositoryInterface interface {
 	CreateAddress(addressDetails entities.DeliveryAddress) (entities.DeliveryAddress, models.EcomError)
 	GetAddress(userDetails entities.EcomUsers) ([]entities.DeliveryAddress, models.EcomError)
 	AddToCart(userDetails entities.EcomUsers, Id int) (entities.Item, models.EcomError)
+	GetProductFromCart(itemId int) (entities.Item, models.EcomError)
 }

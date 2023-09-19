@@ -77,20 +77,24 @@ func Test_products_GetUserDetails(t *testing.T) {
 		fields          fields
 		args            args
 		mockRepoService func(ctrl *gomock.Controller) *mocks.MockRepositoryInterface
-		want            entities.EcomUsers
+		want            models.EcomUsers
 		want1           models.EcomError
 	}{
 		{
 			name: "Success",
 			mockRepoService: func(ctrl *gomock.Controller) *mocks.MockRepositoryInterface {
 				mockRepoService := mocks.NewMockRepositoryInterface(ctrl)
-				mockRepoService.EXPECT().GetUserDetails(gomock.Any()).Return(entities.EcomUsers{}, models.EcomError{})
+				mockRepoService.EXPECT().GetUserDetails(gomock.Any()).Return(entities.EcomUsers{
+					CartItems: `{"items_id":[1,20]}`,
+				}, models.EcomError{})
 				return mockRepoService
 			},
 			args: args{
 				ctx: context.Background(),
 			},
-			want:  entities.EcomUsers{},
+			want:  models.EcomUsers{
+				CartItems: []int{1, 20},
+			},
 			want1: models.EcomError{},
 		},
 	}
@@ -182,12 +186,12 @@ func Test_products_GetCardDetails(t *testing.T) {
 		ctx context.Context
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		args   args
+		name            string
+		fields          fields
+		args            args
 		mockRepoService func(ctrl *gomock.Controller) *mocks.MockRepositoryInterface
-		want   []models.CardDetails
-		want1  models.EcomError
+		want            []models.CardDetails
+		want1           models.EcomError
 	}{
 		{
 			name: "Success",
@@ -197,7 +201,7 @@ func Test_products_GetCardDetails(t *testing.T) {
 				mockRepoService.EXPECT().GetCardDetails(gomock.Any()).Return([]entities.CardDetails{
 					{
 						EncryptedData: "oMFFM7166y/pfxP/Pjr0ZuMXGbevVdONJJ85/Pu97LNfnCgLJl8dRuJc15IN6QvRwQo5X5ELuXK+Hdu6ryTlQ4wA2YuI/CL/e9oE7T8gurt6Yq01/NmJgh0iZiq5gGtxY5mpykyy14qrzbtP+65ewBPiH3/BPI/RutM3AYDTf5RIVHz4k06Jv8OPYIw0BO3w2/NuecBudElyTiJf3PeyYOMqLtXjRuMecvl0/NuBtWi79ABMKfdzICsdJjyoVqQyBaRE2bOkZhyWXzSIlm7rl1Dl6TPGE4KHyskYRSxLu7v8uVma5Agah+dStV2iyATFBdRQIUr/1Di9MZC+TL6Oga0/ivavYCR7BSr2Kj9hqHD3qI4cV3ZJHAdOuBbPADlFjV2nbmny7F8CZr0gGBvTTtsCVvPeUxn1HZ3z9pUOLYmZPQNnLUZ5+PUYD6j3ocItlswIFxomvowcGmfrVc+ym2zSQ4UXF9m+yFB8+kXIg2gW1T0tR7C3D4Gn80//7AxMaYAFlE+H04orBreSklNySL+zwI19uGhUYdF3f7b298s4ssqgAk9wgePtS7WTqmiwxjlsSXTk86EtghY9O5oGKVB6p+uobbMBLog+e8+83f12DifuhMQ4EkIQ+WyooB9QA1VZCjbsXJpHgTJoc4+vobvOw3zmXbQ/pLvRimZoBCY=",
-						EcomId: 	  "1234567890123456",
+						EcomId:        "1234567890123456",
 					},
 				}, models.EcomError{})
 				return mockRepoService
@@ -205,7 +209,7 @@ func Test_products_GetCardDetails(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 			},
-		},				
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -223,4 +227,3 @@ func Test_products_GetCardDetails(t *testing.T) {
 		})
 	}
 }
-

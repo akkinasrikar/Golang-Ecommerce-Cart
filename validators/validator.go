@@ -119,3 +119,7 @@ func (v *validator) ValidateAddToCartReq(ctx *gin.Context) (req models.AddToCart
 
 	return req, models.EcomError{}
 }
+
+func (v *validator) ValidateGetProductsFromCartReq(ctx *gin.Context) models.EcomError {
+	return models.EcomError{}
+}
