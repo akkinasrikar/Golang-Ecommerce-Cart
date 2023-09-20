@@ -31,12 +31,11 @@ func (p *products) GetUserDetails(ctx context.Context) (models.EcomUsers, models
 		return models.EcomUsers{}, *helper.ErrorInternalSystemError(err.Error())
 	}
 	userDetails := models.EcomUsers{
-		EcomID:          user.EcomID,
-		AccountName:     user.AccountName,
-		WalletAmount:    user.WalletAmount,
-		DeliveryAddress: user.DeliveryAddress,
-		UsersID:         user.UsersID,
-		CartItems:       cartItems.ItemsID,
+		EcomID:       user.EcomID,
+		AccountName:  user.AccountName,
+		WalletAmount: user.WalletAmount,
+		UsersID:      user.UsersID,
+		CartItems:    cartItems.ItemsID,
 	}
 	return userDetails, models.EcomError{}
 }
@@ -47,7 +46,7 @@ func (p *products) CardDetails(ctx context.Context, req models.CardDetails) (mod
 		return req, ecomErr
 	}
 
-	req.CardId = utils.GenerateCardId()
+	cardId := utils.GenerateCardId()
 	jsonReq, err := json.Marshal(req)
 	if err != nil {
 		return req, *helper.ErrorInternalSystemError(err.Error())
@@ -59,6 +58,7 @@ func (p *products) CardDetails(ctx context.Context, req models.CardDetails) (mod
 	}
 
 	encryptedCardDetails := entities.CardDetails{
+		CardID:        cardId,
 		EncryptedData: encyptedData,
 		EcomId:        userDetails.EcomID,
 	}
@@ -95,6 +95,7 @@ func (p *products) GetCardDetails(ctx context.Context) ([]models.CardDetails, mo
 		if err != nil {
 			return []models.CardDetails{}, *helper.ErrorInternalSystemError(err.Error())
 		}
+		decryptedCardDetail.CardID = cardDetail.CardID
 		decryptedCardDetails = append(decryptedCardDetails, decryptedCardDetail)
 	}
 	return decryptedCardDetails, models.EcomError{}
@@ -232,4 +233,74 @@ func (p *products) GetProductsFromCart(ctx context.Context) ([]entities.Item, mo
 		items = append(items, item)
 	}
 	return items, models.EcomError{}
+}
+
+func (p *products) OrderProducts(ctx context.Context, req models.PlaceOrder) (models.EcomOrderResponse, models.EcomError) {
+	var cartItems entities.ItemsInCart
+	var orderResponse models.EcomOrderResponse
+	var orderDetails []models.OrderDetails
+
+	userDetails, ecomErr := p.Store.GetUserDetails(ctx)
+	if ecomErr.Message != nil {
+		return models.EcomOrderResponse{}, ecomErr
+	}
+
+	err := json.Unmarshal([]byte(userDetails.CartItems), &cartItems)
+	if err != nil {
+		return models.EcomOrderResponse{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+
+	// last four digits of card adn remaining xxxxx
+	cardNumber := utils.FormatCardNumber(req.CardNumber)
+
+	for _, value := range cartItems.ItemsID {
+		item, ecomErr := p.Store.GetProductFromCart(value)
+		if ecomErr.Message != nil {
+			return models.EcomOrderResponse{}, ecomErr
+		}
+
+		OrderObject := entities.Order{
+			OrderID:        utils.GenerateOrderId(),
+			OrderStatus:    constants.ProductConstants.SUCCESS,
+			OrderAmount:    int64(item.ItemPrice),
+			OrderDate:      utils.GenerateCurrentDate(),
+			OrderName:      item.ItemTitle,
+			PaymentMode:    constants.ProductConstants.CARD,
+			DeliveryStatus: constants.ProductConstants.ONTIME,
+			DeliveryDate:   utils.GenerateRandomDate(),
+			AddressID:      req.AddressID,
+			CardID:         req.CardId,
+			EcomID:         userDetails.EcomID,
+			UsersID:        userDetails.UsersID,
+		}
+
+		OrderedObject, ecomErr := p.Store.CreateOrder(OrderObject)
+		if ecomErr.Message != nil {
+			return models.EcomOrderResponse{}, ecomErr
+		}
+
+		orderDetails = append(orderDetails, models.OrderDetails{
+			OrderID:      OrderedObject.OrderID,
+			Amount:       OrderedObject.OrderAmount,
+			ProductName:  OrderedObject.OrderName,
+			OrderedDate:  OrderedObject.OrderDate,
+			DeliveryDate: OrderedObject.DeliveryDate,
+			Address:      req.Address,
+			CardNUmber:   cardNumber,
+		})
+	}
+	orderResponse.Orders = orderDetails
+	orderResponse.Message = "Successfully ordered!"
+
+	cartItems.ItemsID = []int{}
+	cartItemsJson, err := json.Marshal(cartItems)
+	if err != nil {
+		return models.EcomOrderResponse{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+	userDetails.CartItems = string(cartItemsJson)
+	_, ecomErr = p.Store.UpdateEcomAccount(userDetails, userDetails.EcomID)
+	if ecomErr.Message != nil {
+		return models.EcomOrderResponse{}, ecomErr
+	}
+	return orderResponse, models.EcomError{}
 }

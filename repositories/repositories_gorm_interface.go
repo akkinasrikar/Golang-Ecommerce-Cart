@@ -30,6 +30,9 @@ type RepositoryInterface interface {
 	GetCardDetails(userDetails entities.EcomUsers) ([]entities.CardDetails, models.EcomError)
 	CreateAddress(addressDetails entities.DeliveryAddress) (entities.DeliveryAddress, models.EcomError)
 	GetAddress(userDetails entities.EcomUsers) ([]entities.DeliveryAddress, models.EcomError)
+	GetAddressById(addressId string) (entities.DeliveryAddress, models.EcomError)
 	AddToCart(userDetails entities.EcomUsers, Id int) (entities.Item, models.EcomError)
 	GetProductFromCart(itemId int) (entities.Item, models.EcomError)
+	GetCardDetailsById(cardId string) (entities.CardDetails, models.EcomError)
+	CreateOrder(orderDetails entities.Order) (entities.Order, models.EcomError)
 }

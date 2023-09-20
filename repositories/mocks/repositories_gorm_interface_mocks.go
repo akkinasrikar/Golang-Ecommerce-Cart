@@ -96,6 +96,21 @@ func (mr *MockRepositoryInterfaceMockRecorder) CreateEcomAccount(ecomAccountDeta
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEcomAccount", reflect.TypeOf((*MockRepositoryInterface)(nil).CreateEcomAccount), ecomAccountDetails)
 }
 
+// CreateOrder mocks base method.
+func (m *MockRepositoryInterface) CreateOrder(orderDetails entities.Order) (entities.Order, models.EcomError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateOrder", orderDetails)
+	ret0, _ := ret[0].(entities.Order)
+	ret1, _ := ret[1].(models.EcomError)
+	return ret0, ret1
+}
+
+// CreateOrder indicates an expected call of CreateOrder.
+func (mr *MockRepositoryInterfaceMockRecorder) CreateOrder(orderDetails interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrder", reflect.TypeOf((*MockRepositoryInterface)(nil).CreateOrder), orderDetails)
+}
+
 // GetAddress mocks base method.
 func (m *MockRepositoryInterface) GetAddress(userDetails entities.EcomUsers) ([]entities.DeliveryAddress, models.EcomError) {
 	m.ctrl.T.Helper()
@@ -109,6 +124,21 @@ func (m *MockRepositoryInterface) GetAddress(userDetails entities.EcomUsers) ([]
 func (mr *MockRepositoryInterfaceMockRecorder) GetAddress(userDetails interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAddress", reflect.TypeOf((*MockRepositoryInterface)(nil).GetAddress), userDetails)
+}
+
+// GetAddressById mocks base method.
+func (m *MockRepositoryInterface) GetAddressById(addressId string) (entities.DeliveryAddress, models.EcomError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAddressById", addressId)
+	ret0, _ := ret[0].(entities.DeliveryAddress)
+	ret1, _ := ret[1].(models.EcomError)
+	return ret0, ret1
+}
+
+// GetAddressById indicates an expected call of GetAddressById.
+func (mr *MockRepositoryInterfaceMockRecorder) GetAddressById(addressId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAddressById", reflect.TypeOf((*MockRepositoryInterface)(nil).GetAddressById), addressId)
 }
 
 // GetAllProducts mocks base method.
@@ -139,6 +169,21 @@ func (m *MockRepositoryInterface) GetCardDetails(userDetails entities.EcomUsers)
 func (mr *MockRepositoryInterfaceMockRecorder) GetCardDetails(userDetails interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCardDetails", reflect.TypeOf((*MockRepositoryInterface)(nil).GetCardDetails), userDetails)
+}
+
+// GetCardDetailsById mocks base method.
+func (m *MockRepositoryInterface) GetCardDetailsById(cardId string) (entities.CardDetails, models.EcomError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCardDetailsById", cardId)
+	ret0, _ := ret[0].(entities.CardDetails)
+	ret1, _ := ret[1].(models.EcomError)
+	return ret0, ret1
+}
+
+// GetCardDetailsById indicates an expected call of GetCardDetailsById.
+func (mr *MockRepositoryInterfaceMockRecorder) GetCardDetailsById(cardId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCardDetailsById", reflect.TypeOf((*MockRepositoryInterface)(nil).GetCardDetailsById), cardId)
 }
 
 // GetProductFromCart mocks base method.

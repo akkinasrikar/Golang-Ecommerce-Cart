@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/akkinasrikar/ecommerce-cart/models"
+	"github.com/akkinasrikar/ecommerce-cart/repositories"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,10 +17,15 @@ type Validator interface {
 	ValidateGetAddressReq(ctx *gin.Context) models.EcomError
 	ValidateAddToCartReq(ctx *gin.Context) (models.AddToCart, models.EcomError)
 	ValidateGetProductsFromCartReq(ctx *gin.Context) models.EcomError
+	ValidateOrderProductsReq(ctx *gin.Context) (models.PlaceOrder, models.EcomError)
 }
 
-type validator struct{}
+type validator struct {
+	Store repositories.RepositoryInterface
+}
 
-func NewValidator() Validator {
-	return &validator{}
+func NewValidator(store repositories.RepositoryInterface) Validator {
+	return &validator{
+		Store: store,
+	}
 }
