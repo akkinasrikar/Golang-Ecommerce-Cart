@@ -2,16 +2,19 @@ package validators
 
 import (
 	"context"
+	"encoding/json"
 
+	"github.com/akkinasrikar/ecommerce-cart/config"
 	"github.com/akkinasrikar/ecommerce-cart/constants"
 	"github.com/akkinasrikar/ecommerce-cart/models"
+	"github.com/akkinasrikar/ecommerce-cart/models/entities"
 	"github.com/akkinasrikar/ecommerce-cart/utils"
 	"github.com/akkinasrikar/ecommerce-cart/validators/helper"
 	"github.com/gin-gonic/gin"
 	"github.com/thedevsaddam/govalidator"
 )
 
-func (v *validator) ValidateGetProductReq(ecomCtx context.Context) models.EcomError {	
+func (v *validator) ValidateGetProductReq(ecomCtx context.Context) models.EcomError {
 	return models.EcomError{}
 }
 
@@ -69,7 +72,7 @@ func (v *validator) ValidateAddAddressReq(ctx *gin.Context) (req models.Address,
 	}
 
 	rules := govalidator.MapData{
-		"pincode":  []string{"required", "regex:" + constants.RegularExpression.Pincode},
+		"pincode": []string{"required", "regex:" + constants.RegularExpression.Pincode},
 	}
 
 	opts := govalidator.Options{
@@ -122,4 +125,68 @@ func (v *validator) ValidateAddToCartReq(ctx *gin.Context) (req models.AddToCart
 
 func (v *validator) ValidateGetProductsFromCartReq(ctx *gin.Context) models.EcomError {
 	return models.EcomError{}
+}
+
+func (v *validator) ValidateOrderProductsReq(ctx *gin.Context) (placeOrder models.PlaceOrder, err models.EcomError) {
+	var req models.EcomOrders
+	ecomErr := utils.ValidateUnkownParams(ctx, req)
+	if ecomErr.Message != nil {
+		return models.PlaceOrder{}, ecomErr
+	}
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		return models.PlaceOrder{}, *helper.ErrorParamMissingOrInvalid("Invalid request body", "body")
+	}
+
+	ecomGinCtx, _ := ctx.Get("EcomCtx")
+	ecomCtx := ecomGinCtx.(context.Context)
+	userDetails, ecomErr := v.Store.GetUserDetails(ecomCtx)
+	if ecomErr.Message != nil {
+		return models.PlaceOrder{}, ecomErr
+	}
+
+	var cartItems entities.ItemsInCart
+	unmarshallErr := json.Unmarshal([]byte(userDetails.CartItems), &cartItems)
+	if unmarshallErr != nil {
+		return models.PlaceOrder{}, *helper.ErrorParamMissingOrInvalid("Invalid cart items", "cart_items")
+	}
+
+	if len(cartItems.ItemsID) == 0 {
+		return models.PlaceOrder{}, *helper.ErrorParamMissingOrInvalid("No items in cart", "cart_items")
+	}
+
+	addressDetails, ecomErr := v.Store.GetAddressById(req.AddressID)
+	if ecomErr.Message != nil {
+		return models.PlaceOrder{}, ecomErr
+	}
+	if addressDetails.AddressID == "" {
+		return models.PlaceOrder{}, *helper.ErrorParamMissingOrInvalid("Invalid address id", "address_id")
+	}
+
+	cardDetails, ecomErr := v.Store.GetCardDetailsById(req.CardId)
+	if ecomErr.Message != nil {
+		return models.PlaceOrder{}, ecomErr
+	}
+	if cardDetails.CardID == "" {
+		return models.PlaceOrder{}, *helper.ErrorParamMissingOrInvalid("Invalid card id", "card_id")
+	}
+
+	decryptCardDetails, decryptErr := utils.DecryptData([]byte(cardDetails.EncryptedData), config.FakeStore.PrivateKey)
+	if decryptErr != nil {
+		return models.PlaceOrder{}, *helper.ErrorInternalSystemError(decryptErr.Error())
+	}
+
+	var cardDetailsJson models.CardDetails
+	unmarshallErr = json.Unmarshal(decryptCardDetails, &cardDetailsJson)
+	if unmarshallErr != nil {
+		return models.PlaceOrder{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+
+	placeOrder.AddressID = addressDetails.AddressID
+	placeOrder.Address = utils.GetDeliveryAddress(addressDetails)
+	placeOrder.CardId = cardDetails.CardID
+	placeOrder.CardNumber = cardDetailsJson.CardNumber
+	placeOrder.EcomId = userDetails.EcomID
+	placeOrder.UsersID = userDetails.UsersID
+
+	return placeOrder, models.EcomError{}
 }

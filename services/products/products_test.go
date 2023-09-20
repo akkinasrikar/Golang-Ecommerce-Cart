@@ -147,7 +147,6 @@ func Test_products_CardDetails(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				req: models.CardDetails{
-					CardId:     "1234567890123456",
 					CardNumber: 1234567890123456,
 					ExpiryDate: "12/22",
 					CVV:        123,

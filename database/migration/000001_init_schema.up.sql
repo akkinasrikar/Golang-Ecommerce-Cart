@@ -10,13 +10,13 @@ CREATE TABLE public.ecom_users (
     ecom_id varchar(255) NOT NULL,
     account_name varchar(255) NOT NULL,
     wallet_amount int8 NOT NULL DEFAULT 0,
-    delivery_address varchar(500) NULL,
     cart_items varchar(500) NULL,
     users_id int8 NOT NULL,
     CONSTRAINT ecom_users_pkey PRIMARY KEY (ecom_id)
 );
 
 CREATE TABLE public.card_details (
+    card_id varchar(255) NOT NULL,
     encrypted_data varchar(5000) NOT NULL,
     ecom_id varchar(255) NOT NULL
 );
@@ -35,10 +35,13 @@ CREATE TABLE public.orders (
     order_id varchar(255) NOT NULL,
     order_status varchar(255) NOT NULL,
     order_amount int8 NOT NULL,
-    order_date timestamp NOT NULL,
-    order_items jsonb NOT NULL,
-    order_address jsonb NOT NULL,
-    order_payment jsonb NOT NULL,
+    order_date varchar(255) NOT NULL,
+    order_name varchar(5000) NOT NULL,
+    payment_mode varchar(255) NOT NULL,
+    delivery_status varchar(255) NOT NULL,
+    delivery_date varchar(255) NULL,
+    address_id varchar(500) NOT NULL,
+    card_id varchar(255) NOT NULL,
     ecom_id varchar(255) NOT NULL,
     users_id int8 NOT NULL,
     CONSTRAINT orders_order_id_key UNIQUE (order_id)

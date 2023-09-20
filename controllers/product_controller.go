@@ -163,3 +163,20 @@ func (ph *ProductHandler) GetProductsFromCart(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, resp)
 }
+
+func (ph *ProductHandler) OrderProducts(ctx *gin.Context) {
+	req, err := ph.productValidator.ValidateOrderProductsReq(ctx)
+	if err.Message != nil {
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
+		return
+	}
+	ecomGinCtx, _ := ctx.Get("EcomCtx")
+	ecomCtx := ecomGinCtx.(context.Context)
+	resp, err := ph.ecomService.OrderProducts(ecomCtx, req)
+	if err.Message != nil {
+		ctx.JSON(int(err.Code), &err)
+		return
+	}
+	ctx.JSON(http.StatusOK, resp)
+}

@@ -7,6 +7,7 @@ import (
 	"io"
 	"math/rand"
 	"net/http/httptest"
+	"strconv"
 	"strings"
 	"time"
 
@@ -87,6 +88,31 @@ func GenerateCardId() string {
 
 func GenerateAddressId() string {
 	return "address_" + GenerateRandomString()
+}
+
+func GenerateOrderId() string {
+	return "order_" + GenerateRandomString()
+}
+
+func GenerateRandomDate() string {
+	min := time.Now().Unix()
+	max := time.Now().AddDate(0, 0, 3).Unix()
+	delta := max - min
+	sec := rand.Int63n(delta) + min
+	return time.Unix(sec, 0).Format("2006-01-02")
+}
+
+func GenerateCurrentDate() string {
+	return time.Now().Format("2006-01-02")
+}
+
+func GetDeliveryAddress(data entities.DeliveryAddress) string {
+	return data.HouseNo + ", " + data.Street + ", " + data.City + ", " + data.State + ", " + data.Pincode
+}
+
+func FormatCardNumber(cardNumber int64) string {
+	cardNumberStr := strconv.FormatInt(cardNumber, 10)
+	return "XXXX-XXXX-XXXX-" + cardNumberStr[len(cardNumberStr)-4:]
 }
 
 func ValidateUnkownParams(ctx *gin.Context, body interface{}) models.EcomError {

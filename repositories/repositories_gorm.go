@@ -115,3 +115,28 @@ func (r *Repository) GetProductFromCart(itemId int) (entities.Item, models.EcomE
 	}
 	return item, models.EcomError{}
 }
+
+func (r *Repository) GetCardDetailsById(cardId string) (entities.CardDetails, models.EcomError) {
+	var cardDetails entities.CardDetails
+	_, err := r.dbStore.Where("card_id = ?", cardId).Find(&cardDetails)
+	if err != nil {
+		return entities.CardDetails{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+	return cardDetails, models.EcomError{}
+}
+
+func (r *Repository) CreateOrder(orderDetails entities.Order) (entities.Order, models.EcomError) {
+	if err := r.dbStore.Create(&orderDetails); err != nil {
+		return entities.Order{}, *helper.ErrorInternalSystemError("Error while creating order : " + err.Error())
+	}
+	return orderDetails, models.EcomError{}
+}
+
+func (r *Repository) GetAddressById(addressId string) (entities.DeliveryAddress, models.EcomError) {
+	var addressDetails entities.DeliveryAddress
+	_, err := r.dbStore.Where("address_id = ?", addressId).Find(&addressDetails)
+	if err != nil {
+		return entities.DeliveryAddress{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+	return addressDetails, models.EcomError{}
+}
