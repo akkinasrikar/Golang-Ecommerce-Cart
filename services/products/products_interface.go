@@ -11,6 +11,7 @@ import (
 
 type Products interface {
 	GetProducts(context.Context) ([]entities.Item, models.EcomError)
+	GetProductById(context.Context, int) (string, models.EcomError)
 	GetUserDetails(context.Context) (models.EcomUsers, models.EcomError)
 	CardDetails(context.Context, models.CardDetails) (models.CardDetails, models.EcomError)
 	GetCardDetails(context.Context) ([]models.CardDetails, models.EcomError)

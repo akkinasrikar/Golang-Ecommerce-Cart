@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 
 	"github.com/akkinasrikar/ecommerce-cart/config"
@@ -19,6 +20,20 @@ func (p *products) GetProducts(ctx context.Context) ([]entities.Item, models.Eco
 		return items, err
 	}
 	return items, models.EcomError{}
+}
+
+func (p *products) GetProductById(ctx context.Context, id int) (string, models.EcomError) {
+	item, err := p.Store.GetProductById(id)
+	if err.Message != nil {
+		return "", err
+	}
+	image, imageerr := utils.ReadImageFromUrl(item.ItemImage)
+	if imageerr != nil {
+		return "", *helper.ErrorInternalSystemError(imageerr.Error())
+	}
+	base64Image := base64.StdEncoding.EncodeToString(image)
+	htmlResponse := utils.GenerateHtmlResponse(string(base64Image), item)
+	return htmlResponse, models.EcomError{}
 }
 
 func (p *products) GetUserDetails(ctx context.Context) (models.EcomUsers, models.EcomError) {
