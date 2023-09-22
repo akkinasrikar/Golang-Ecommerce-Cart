@@ -3,6 +3,7 @@ package validators
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 
 	"github.com/akkinasrikar/ecommerce-cart/config"
 	"github.com/akkinasrikar/ecommerce-cart/constants"
@@ -16,6 +17,18 @@ import (
 
 func (v *validator) ValidateGetProductReq(ecomCtx context.Context) models.EcomError {
 	return models.EcomError{}
+}
+
+func (v *validator) ValidateGetProductByIdReq(ctx *gin.Context) (int, models.EcomError) {
+	id := ctx.Query("id")
+	if id == "" {
+		return 0, *helper.ErrorParamMissingOrInvalid("Invalid id", "id")
+	}
+	Id, err := strconv.Atoi(id)
+	if err != nil {
+		return 0, *helper.ErrorParamMissingOrInvalid("Invalid id", "id")
+	}
+	return Id, models.EcomError{}
 }
 
 func (v *validator) ValidateGetUserDetailsReq(ecomCtx context.Context) models.EcomError {

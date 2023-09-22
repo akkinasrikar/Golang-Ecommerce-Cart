@@ -23,6 +23,7 @@ type RepositoryInterface interface {
 	SignUp(userDetails entities.SignUp) (entities.SignUp, models.EcomError)
 	Login(userDetails entities.Login) (entities.SignUp, models.EcomError)
 	GetAllProducts() ([]entities.Item, models.EcomError)
+	GetProductById(id int) (entities.Item, models.EcomError)
 	CreateEcomAccount(ecomAccountDetails entities.EcomUsers) (entities.EcomUsers, models.EcomError)
 	UpdateEcomAccount(ecomAccountDetails entities.EcomUsers, ecomId string) (entities.EcomUsers, models.EcomError)
 	GetUserDetails(ctx context.Context) (entities.EcomUsers, models.EcomError)

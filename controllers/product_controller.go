@@ -40,6 +40,23 @@ func (ph *ProductHandler) GetProducts(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
+func (ph *ProductHandler) GetProductById(ctx *gin.Context) {
+	id, err := ph.productValidator.ValidateGetProductByIdReq(ctx)
+	if err.Message != nil {
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
+		return
+	}
+	resp, err := ph.ecomService.GetProductById(ctx,id)
+	if err.Message != nil {
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
+		return
+	}
+	ctx.Header("Content-Type", "text/html")
+	ctx.String(http.StatusOK, resp)
+}
+
 func (ph *ProductHandler) GetUserDetails(ctx *gin.Context) {
 	err := ph.productValidator.ValidateGetUserDetailsReq(ctx)
 	if err.Message != nil {

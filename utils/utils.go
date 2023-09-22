@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"math/rand"
+	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"strings"
@@ -161,4 +163,44 @@ func UnmarshallCartItems(data string) (entities.ItemsInCart, error) {
 		return entities.ItemsInCart{}, err
 	}
 	return cartItems, nil
+}
+
+func ReadImageFromUrl(url string) ([]byte, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	image, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	return image, nil
+}
+
+func GenerateHtmlResponse(image string, data entities.Item) string {
+	htmlResponse := `
+	<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Data with Image</title>
+		</head>
+			<body>
+				<h1 style="text-align:center">Product Details</h1>
+					<p><strong>Item ID:</strong> %d</p>
+					<p><strong>Item Title:</strong> %s</p>
+					<p><strong>Item Price:</strong> $%.2f</p>
+					<p><strong>Item Description:</strong> %s</p>
+					<p><strong>Item Category:</strong> %s</p>
+					<p><strong>Item Rating:</strong> %.2f</p>
+					<p><strong>Item Count:</strong> %d</p>
+				<h1 style="text-align:center" >Image</h1>
+					<div style="text-align: center;">
+						<img src="data:image/png;base64,%s" alt="Embedded Image" 
+					</div>
+			</body>
+	</html>
+`
+	htmlResponse = fmt.Sprintf(htmlResponse, data.ItemID, data.ItemTitle, data.ItemPrice, data.ItemDescription, data.ItemCategory, data.ItemRating, data.ItemCount, image)
+	return htmlResponse
 }
