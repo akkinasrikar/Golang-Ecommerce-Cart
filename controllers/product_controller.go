@@ -24,6 +24,18 @@ func NewProductHandler(productValidator validator.Validator, ecomService service
 	}
 }
 
+// SeedData
+func (ph *ProductHandler) SeedData(ctx *gin.Context) {
+	ecomGinCtx, _ := ctx.Get("EcomCtx")
+	ecomCtx := ecomGinCtx.(context.Context)
+	err := ph.ecomService.SeedData(ecomCtx)
+	if err.Message != nil {
+		err := helper.SetInternalError(err.Message.Error())
+		ctx.JSON(int(err.ErrorType.Code), &err)
+	}
+	ctx.JSON(http.StatusOK, "Data seeded successfully")
+}
+
 func (ph *ProductHandler) GetProducts(ctx *gin.Context) {
 	err := ph.productValidator.ValidateGetProductReq(ctx)
 	if err.Message != nil {

@@ -64,6 +64,7 @@ CREATE TABLE public.items (
     item_image varchar(1000) NOT NULL,
     item_rating DOUBLE PRECISION NOT NULL,
     item_count int8 NOT NULL,
+    image_base64 varchar(100000),
     CONSTRAINT items_item_id_key UNIQUE (item_id)
 );
 

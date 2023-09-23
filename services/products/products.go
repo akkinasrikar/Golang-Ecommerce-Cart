@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"encoding/base64"
 	"encoding/json"
 
 	"github.com/akkinasrikar/ecommerce-cart/config"
@@ -12,6 +11,38 @@ import (
 	"github.com/akkinasrikar/ecommerce-cart/utils"
 	"github.com/akkinasrikar/ecommerce-cart/validators/helper"
 )
+
+func (p *products) SeedData(ctx context.Context) models.EcomError {
+	item, err := p.Store.GetProductById(1)
+	if item.ItemID != 0 || err.Message != nil {
+		return *helper.ErrorInternalSystemError("data already seeded")
+	}
+	apiResponse, err := p.APIProvider.GetItems(ctx)
+	if err.Message != nil {
+		return *helper.ErrorInternalSystemError(err.Message.Error())
+	}
+	for _, value := range apiResponse {
+		item := entities.Item{
+			ItemID:          value.Id,
+			ItemTitle:       value.Title,
+			ItemPrice:       value.Price,
+			ItemImage:       value.Image,
+			ItemRating:      value.Rating.Rate,
+			ItemDescription: value.Description,
+			ItemCategory:    value.Category,
+			ItemCount:       value.Rating.Count,
+		}
+		_, err := p.Store.CreateProduct(item)
+		if err.Message != nil {
+			return *helper.ErrorInternalSystemError(err.Message.Error())
+		}
+		asynqErr := p.ProducAsynqService.ProductImageResize(ctx, value.Id)
+		if asynqErr != nil {
+			return *helper.ErrorInternalSystemError(asynqErr.Error())
+		}
+	}
+	return models.EcomError{}
+}
 
 func (p *products) GetProducts(ctx context.Context) ([]entities.Item, models.EcomError) {
 	var items []entities.Item
@@ -27,12 +58,7 @@ func (p *products) GetProductById(ctx context.Context, id int) (string, models.E
 	if err.Message != nil {
 		return "", err
 	}
-	image, imageerr := utils.ReadImageFromUrl(item.ItemImage)
-	if imageerr != nil {
-		return "", *helper.ErrorInternalSystemError(imageerr.Error())
-	}
-	base64Image := base64.StdEncoding.EncodeToString(image)
-	htmlResponse := utils.GenerateHtmlResponse(string(base64Image), item)
+	htmlResponse := utils.GenerateHtmlResponse(item.ImageBase64, item)
 	return htmlResponse, models.EcomError{}
 }
 

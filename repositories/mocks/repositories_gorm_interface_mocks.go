@@ -111,6 +111,21 @@ func (mr *MockRepositoryInterfaceMockRecorder) CreateOrder(orderDetails interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrder", reflect.TypeOf((*MockRepositoryInterface)(nil).CreateOrder), orderDetails)
 }
 
+// CreateProduct mocks base method.
+func (m *MockRepositoryInterface) CreateProduct(item entities.Item) (entities.Item, models.EcomError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateProduct", item)
+	ret0, _ := ret[0].(entities.Item)
+	ret1, _ := ret[1].(models.EcomError)
+	return ret0, ret1
+}
+
+// CreateProduct indicates an expected call of CreateProduct.
+func (mr *MockRepositoryInterfaceMockRecorder) CreateProduct(item interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateProduct", reflect.TypeOf((*MockRepositoryInterface)(nil).CreateProduct), item)
+}
+
 // GetAddress mocks base method.
 func (m *MockRepositoryInterface) GetAddress(userDetails entities.EcomUsers) ([]entities.DeliveryAddress, models.EcomError) {
 	m.ctrl.T.Helper()
@@ -274,4 +289,19 @@ func (m *MockRepositoryInterface) UpdateEcomAccount(ecomAccountDetails entities.
 func (mr *MockRepositoryInterfaceMockRecorder) UpdateEcomAccount(ecomAccountDetails, ecomId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateEcomAccount", reflect.TypeOf((*MockRepositoryInterface)(nil).UpdateEcomAccount), ecomAccountDetails, ecomId)
+}
+
+// UpdateProductByID mocks base method.
+func (m *MockRepositoryInterface) UpdateProductByID(id int, item entities.Item) (entities.Item, models.EcomError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateProductByID", id, item)
+	ret0, _ := ret[0].(entities.Item)
+	ret1, _ := ret[1].(models.EcomError)
+	return ret0, ret1
+}
+
+// UpdateProductByID indicates an expected call of UpdateProductByID.
+func (mr *MockRepositoryInterfaceMockRecorder) UpdateProductByID(id, item interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateProductByID", reflect.TypeOf((*MockRepositoryInterface)(nil).UpdateProductByID), id, item)
 }
