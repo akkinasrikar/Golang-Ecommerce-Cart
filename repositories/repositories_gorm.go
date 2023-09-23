@@ -41,12 +41,25 @@ func (r *Repository) GetAllProducts() ([]entities.Item, models.EcomError) {
 	return items, models.EcomError{}
 }
 
-// GetProductById
 func (r *Repository) GetProductById(id int) (entities.Item, models.EcomError) {
 	var item entities.Item
 	_, err := r.dbStore.Where("item_id = ?", id).Find(&item)
 	if err != nil {
 		return entities.Item{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+	return item, models.EcomError{}
+}
+
+func (r *Repository) CreateProduct(item entities.Item) (entities.Item, models.EcomError) {
+	if err := r.dbStore.Create(&item); err != nil {
+		return entities.Item{}, *helper.ErrorInternalSystemError("Error while creating product : " + err.Error())
+	}
+	return item, models.EcomError{}
+}
+
+func (r *Repository) UpdateProductByID(id int, item entities.Item) (entities.Item, models.EcomError) {
+	if _, err := r.dbStore.Where("item_id = ?", id).Updates(&item); err != nil {
+		return entities.Item{}, *helper.ErrorInternalSystemError("Error while updating product : " + err.Error())
 	}
 	return item, models.EcomError{}
 }

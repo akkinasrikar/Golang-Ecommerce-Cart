@@ -16,18 +16,16 @@ func Init(db *gorm.DB) (*HttpServer, error) {
 	router := gin.Default()
 	server.Router = router
 	redisClient := InitRedisCache()
+
 	// create postgres db connection database.DB
 	dbStore := database.NewDb(db)
 	// check if data is seeded
-	if !database.IsDataSeeded(dbStore) {
-		database.SeedData(dbStore)
-	}
 	setUpRoutes(router, dbStore, redisClient)
 	return server, nil
 }
 
 func (s *HttpServer) Start() error {
-	s.Router.Run(":8080")
+	s.Router.Run(":8081")
 	return nil
 }
 

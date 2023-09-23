@@ -9,6 +9,7 @@ type Item struct {
 	ItemImage       string  `gorm:"column:item_image;not null"`
 	ItemRating      float64 `gorm:"column:item_rating;not null"`
 	ItemCount       int     `gorm:"column:item_count;not null"`
+	ImageBase64     string  `gorm:"column:image_base64"`
 }
 
 type ItemsInCart struct {

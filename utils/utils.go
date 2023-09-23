@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"image"
+	"image/jpeg"
 	"io"
 	"math/rand"
 	"net/http"
@@ -20,6 +22,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/nfnt/resize"
 )
 
 func GenerateToken(Username string, UserId int64) (string, error) {
@@ -203,4 +206,20 @@ func GenerateHtmlResponse(image string, data entities.Item) string {
 `
 	htmlResponse = fmt.Sprintf(htmlResponse, data.ItemID, data.ItemTitle, data.ItemPrice, data.ItemDescription, data.ItemCategory, data.ItemRating, data.ItemCount, image)
 	return htmlResponse
+}
+
+func ResizeImage(imageBytes []byte) ([]byte, error) {
+	img, _, err := image.Decode(bytes.NewReader(imageBytes))
+	if err != nil {
+		return nil, err
+	}
+	newWidth := 200
+	newHeight := 200
+	resizedImg := resize.Resize(uint(newWidth), uint(newHeight), img, resize.Lanczos3)
+	buf := new(bytes.Buffer)
+	err = jpeg.Encode(buf, resizedImg, nil)
+	if err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }

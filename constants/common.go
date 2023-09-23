@@ -21,3 +21,9 @@ var ProductConstants = struct {
 	ONTIME:        "on time",
 	DELIVERED:     "delivered",
 }
+
+var ProcessTasks = struct {
+	IMAGERESIZE string
+}{
+	IMAGERESIZE: "image-resize",
+}

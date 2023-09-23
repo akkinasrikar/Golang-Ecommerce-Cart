@@ -12,6 +12,7 @@ import (
 	validatorsLogin "github.com/akkinasrikar/ecommerce-cart/validators/login"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"github.com/hibiken/asynq"
 )
 
 func setUpRoutes(router *gin.Engine, db database.DB, redisClient *redis.Client) {
@@ -23,8 +24,10 @@ func setUpRoutes(router *gin.Engine, db database.DB, redisClient *redis.Client) 
 	loginHandler(router, *LoginHandler)
 
 	apiServices := api.NewService()
+	asynqClient := asynq.NewClient(asynq.RedisClientOpt{Addr: "127.0.0.1:6379"})
+	productAsynqService := services.NewAsynqService(ecomStore, asynqClient)
 	validatorServices := validator.NewValidator(ecomStore)
-	ecomServices := services.NewService(apiServices, ecomStore)
+	ecomServices := services.NewService(apiServices, ecomStore, productAsynqService)
 	ecomHandler := controllers.NewProductHandler(validatorServices, ecomServices)
 	productHandler(router, *ecomHandler)
 }
@@ -43,6 +46,7 @@ func productHandler(router *gin.Engine, ecomHandler controllers.ProductHandler) 
 	router.Use((middleware.TraceIDMiddleware()))
 	router.GET("/user", ecomHandler.GetUserDetails)
 	router.GET("/products", ecomHandler.GetProducts)
+	router.GET("/seed", ecomHandler.SeedData)
 	router.GET("/products-by-id", ecomHandler.GetProductById)
 	router.POST("/card-details", ecomHandler.CardDetails)
 	router.GET("/card-details", ecomHandler.GetCardDetails)

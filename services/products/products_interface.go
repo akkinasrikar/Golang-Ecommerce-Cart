@@ -10,6 +10,7 @@ import (
 )
 
 type Products interface {
+	SeedData(context.Context) models.EcomError
 	GetProducts(context.Context) ([]entities.Item, models.EcomError)
 	GetProductById(context.Context, int) (string, models.EcomError)
 	GetUserDetails(context.Context) (models.EcomUsers, models.EcomError)
@@ -24,11 +25,13 @@ type Products interface {
 
 type products struct {
 	APIProvider api.Service
+	ProducAsynqService ProducAsynqService 
 	Store       repositories.RepositoryInterface
 }
 
-func NewService(apiProvider api.Service, store repositories.RepositoryInterface) Products {
+func NewService(apiProvider api.Service, store repositories.RepositoryInterface, producAsynqService ProducAsynqService) Products {
 	return &products{
+		ProducAsynqService: producAsynqService,
 		APIProvider: apiProvider,
 		Store:       store,
 	}
