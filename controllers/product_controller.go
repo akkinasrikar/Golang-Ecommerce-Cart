@@ -209,3 +209,19 @@ func (ph *ProductHandler) OrderProducts(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, resp)
 }
+
+func (ph *ProductHandler) GetOrdersByUserId(ctx *gin.Context) {
+	err := ph.productValidator.ValidateGetOrdersByUserIdReq(ctx)
+	if err.Message != nil {
+		ctx.JSON(int(err.Code), &err)
+		return
+	}
+	ecomGinCtx, _ := ctx.Get("EcomCtx")
+	ecomCtx := ecomGinCtx.(context.Context)
+	resp, err := ph.ecomService.GetOrdersByUserId(ecomCtx)
+	if err.Message != nil {
+		ctx.JSON(int(err.Code), &err)
+		return
+	}
+	ctx.JSON(http.StatusOK, resp)
+}

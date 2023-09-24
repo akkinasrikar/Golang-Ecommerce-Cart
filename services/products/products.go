@@ -345,3 +345,11 @@ func (p *products) OrderProducts(ctx context.Context, req models.PlaceOrder) (mo
 	}
 	return orderResponse, models.EcomError{}
 }
+
+func (p *products) GetOrdersByUserId(ctx context.Context) ([]entities.Order, models.EcomError) {
+	orders, ecomErr := p.Store.GetAllOrderByUserID(ctx)
+	if ecomErr.Message != nil {
+		return []entities.Order{}, ecomErr
+	}
+	return orders, models.EcomError{}
+}

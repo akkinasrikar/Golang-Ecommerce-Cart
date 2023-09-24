@@ -55,4 +55,5 @@ func productHandler(router *gin.Engine, ecomHandler controllers.ProductHandler) 
 	router.POST("/cart", ecomHandler.AddOrDeleteToCart)
 	router.GET("/cart", ecomHandler.GetProductsFromCart)
 	router.POST("/order", ecomHandler.OrderProducts)
+	router.GET("/order", ecomHandler.GetOrdersByUserId)
 }

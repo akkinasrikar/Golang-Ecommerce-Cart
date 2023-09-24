@@ -155,6 +155,32 @@ func (r *Repository) CreateOrder(orderDetails entities.Order) (entities.Order, m
 	return orderDetails, models.EcomError{}
 }
 
+func (r *Repository) UpdateOrderByID(orderId string, orderDetails entities.Order) (entities.Order, models.EcomError) {
+	if _, err := r.dbStore.Where("order_id = ?", orderId).Updates(&orderDetails); err != nil {
+		return entities.Order{}, *helper.ErrorInternalSystemError("Error while updating order : " + err.Error())
+	}
+	return orderDetails, models.EcomError{}
+}
+
+func (r *Repository) GetAllOrders() ([]entities.Order, models.EcomError) {
+	var orders []entities.Order
+	_, err := r.dbStore.Find(&orders)
+	if err != nil {
+		return []entities.Order{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+	return orders, models.EcomError{}
+}
+
+func (r *Repository) GetAllOrderByUserID(ctx context.Context) ([]entities.Order, models.EcomError) {
+	var orders []entities.Order
+	authData := ctx.Value(models.EcomctxKey("AuthData")).(models.AuthData)
+	_, err := r.dbStore.Where("users_id = ?", authData.UsersId).Find(&orders)
+	if err != nil {
+		return []entities.Order{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+	return orders, models.EcomError{}
+}
+
 func (r *Repository) GetAddressById(addressId string) (entities.DeliveryAddress, models.EcomError) {
 	var addressDetails entities.DeliveryAddress
 	_, err := r.dbStore.Where("address_id = ?", addressId).Find(&addressDetails)

@@ -21,6 +21,7 @@ type Products interface {
 	AddOrDeleteToCart(context.Context, models.AddToCart) (models.CartResponse, models.EcomError)
 	GetProductsFromCart(context.Context) ([]entities.Item, models.EcomError)
 	OrderProducts(context.Context, models.PlaceOrder) (models.EcomOrderResponse, models.EcomError)
+	GetOrdersByUserId(context.Context) ([]entities.Order, models.EcomError)
 }
 
 type products struct {

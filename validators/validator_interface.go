@@ -19,6 +19,7 @@ type Validator interface {
 	ValidateAddToCartReq(ctx *gin.Context) (models.AddToCart, models.EcomError)
 	ValidateGetProductsFromCartReq(ctx *gin.Context) models.EcomError
 	ValidateOrderProductsReq(ctx *gin.Context) (models.PlaceOrder, models.EcomError)
+	ValidateGetOrdersByUserIdReq(ctx *gin.Context) models.EcomError
 }
 
 type validator struct {
