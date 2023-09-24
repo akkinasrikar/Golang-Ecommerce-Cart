@@ -22,6 +22,7 @@ type AsynqPublisher interface {
 type ProducAsynqService interface {
 	ProductImageResize(context.Context, int) error
 	ImageResize(context.Context, models.ImageResize) error
+	UpdateDeliveryStatus(context.Context) error
 }
 
 type productAsynqImpl struct {
@@ -76,6 +77,23 @@ func (p *productAsynqImpl) ImageResize(ctx context.Context, resizeImageData mode
 	_, ecomErr := p.Store.UpdateProductByID(item.ItemID, item)
 	if ecomErr.Message != nil {
 		return errors.New("error while updating product image")
+	}
+	return nil
+}
+
+func (p *productAsynqImpl) UpdateDeliveryStatus(ctx context.Context) error {
+	orders, ecomErr := p.Store.GetAllOrders()
+	if ecomErr.Message != nil {
+		return errors.New("error while fetching orders from db")
+	}
+	for _, order := range orders {
+		if order.DeliveryDate == utils.GenerateCurrentDate() {
+			order.DeliveryStatus = "Delivered"
+			_, ecomErr := p.Store.UpdateOrderByID(order.OrderID, order)
+			if ecomErr.Message != nil {
+				return errors.New("error while updating order status")
+			}
+		}
 	}
 	return nil
 }

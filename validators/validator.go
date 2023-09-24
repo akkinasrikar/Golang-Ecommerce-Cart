@@ -19,6 +19,10 @@ func (v *validator) ValidateGetProductReq(ecomCtx context.Context) models.EcomEr
 	return models.EcomError{}
 }
 
+func (v *validator) ValidateGetOrdersByUserIdReq(ctx *gin.Context) models.EcomError {
+	return models.EcomError{}
+}
+
 func (v *validator) ValidateGetProductByIdReq(ctx *gin.Context) (int, models.EcomError) {
 	id := ctx.Query("id")
 	if id == "" {

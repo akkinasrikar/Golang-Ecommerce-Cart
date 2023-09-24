@@ -4,13 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"time"
 
 	"github.com/akkinasrikar/ecommerce-cart/constants"
 	"github.com/akkinasrikar/ecommerce-cart/database"
 	"github.com/akkinasrikar/ecommerce-cart/models"
 	"github.com/akkinasrikar/ecommerce-cart/repositories"
 	services "github.com/akkinasrikar/ecommerce-cart/services/products"
+	"github.com/akkinasrikar/ecommerce-cart/worker/cron"
+	"github.com/go-co-op/gocron"
+	redislock "github.com/go-co-op/gocron-redis-lock"
 	"github.com/hibiken/asynq"
+	"github.com/redis/go-redis/v9"
 )
 
 const redisAddr = "127.0.0.1:6379"
@@ -31,6 +36,20 @@ func main() {
 	ecomStore := repositories.NewRepository(dbStore)
 	asynqClient := asynq.NewClient(asynq.RedisClientOpt{Addr: redisAddr})
 	productService := services.NewAsynqService(ecomStore, asynqClient)
+
+	redisClient := redis.NewUniversalClient(&redis.UniversalOptions{
+		Addrs: []string{redisAddr},
+	})
+
+	locker, err := redislock.NewRedisLocker(redisClient, redislock.WithTries(1))
+	if err != nil {
+		log.Fatal(err)
+	}
+	s := gocron.NewScheduler(time.Local)
+	ctx := context.Background()
+	s.WithDistributedLocker(locker)
+	go cron.Start(ctx, s, productService)
+	defer s.Stop()
 
 	mux := asynq.NewServeMux()
 	mux.Use(func(h asynq.Handler) asynq.Handler {

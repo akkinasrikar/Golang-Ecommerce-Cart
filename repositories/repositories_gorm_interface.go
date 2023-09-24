@@ -38,4 +38,8 @@ type RepositoryInterface interface {
 	GetProductFromCart(itemId int) (entities.Item, models.EcomError)
 	GetCardDetailsById(cardId string) (entities.CardDetails, models.EcomError)
 	CreateOrder(orderDetails entities.Order) (entities.Order, models.EcomError)
+	UpdateOrderByID(orderId string, orderDetails entities.Order) (entities.Order, models.EcomError)
+	GetAllOrders() ([]entities.Order, models.EcomError)
+	GetAllOrderByUserID(ctx context.Context) ([]entities.Order, models.EcomError)
+
 }

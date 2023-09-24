@@ -156,6 +156,36 @@ func (mr *MockRepositoryInterfaceMockRecorder) GetAddressById(addressId interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAddressById", reflect.TypeOf((*MockRepositoryInterface)(nil).GetAddressById), addressId)
 }
 
+// GetAllOrderByUserID mocks base method.
+func (m *MockRepositoryInterface) GetAllOrderByUserID(ctx context.Context) ([]entities.Order, models.EcomError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllOrderByUserID", ctx)
+	ret0, _ := ret[0].([]entities.Order)
+	ret1, _ := ret[1].(models.EcomError)
+	return ret0, ret1
+}
+
+// GetAllOrderByUserID indicates an expected call of GetAllOrderByUserID.
+func (mr *MockRepositoryInterfaceMockRecorder) GetAllOrderByUserID(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllOrderByUserID", reflect.TypeOf((*MockRepositoryInterface)(nil).GetAllOrderByUserID), ctx)
+}
+
+// GetAllOrders mocks base method.
+func (m *MockRepositoryInterface) GetAllOrders() ([]entities.Order, models.EcomError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllOrders")
+	ret0, _ := ret[0].([]entities.Order)
+	ret1, _ := ret[1].(models.EcomError)
+	return ret0, ret1
+}
+
+// GetAllOrders indicates an expected call of GetAllOrders.
+func (mr *MockRepositoryInterfaceMockRecorder) GetAllOrders() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllOrders", reflect.TypeOf((*MockRepositoryInterface)(nil).GetAllOrders))
+}
+
 // GetAllProducts mocks base method.
 func (m *MockRepositoryInterface) GetAllProducts() ([]entities.Item, models.EcomError) {
 	m.ctrl.T.Helper()
@@ -289,6 +319,21 @@ func (m *MockRepositoryInterface) UpdateEcomAccount(ecomAccountDetails entities.
 func (mr *MockRepositoryInterfaceMockRecorder) UpdateEcomAccount(ecomAccountDetails, ecomId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateEcomAccount", reflect.TypeOf((*MockRepositoryInterface)(nil).UpdateEcomAccount), ecomAccountDetails, ecomId)
+}
+
+// UpdateOrderByID mocks base method.
+func (m *MockRepositoryInterface) UpdateOrderByID(orderId string, orderDetails entities.Order) (entities.Order, models.EcomError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateOrderByID", orderId, orderDetails)
+	ret0, _ := ret[0].(entities.Order)
+	ret1, _ := ret[1].(models.EcomError)
+	return ret0, ret1
+}
+
+// UpdateOrderByID indicates an expected call of UpdateOrderByID.
+func (mr *MockRepositoryInterfaceMockRecorder) UpdateOrderByID(orderId, orderDetails interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateOrderByID", reflect.TypeOf((*MockRepositoryInterface)(nil).UpdateOrderByID), orderId, orderDetails)
 }
 
 // UpdateProductByID mocks base method.
