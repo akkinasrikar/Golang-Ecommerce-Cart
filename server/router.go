@@ -4,6 +4,7 @@ import (
 	"github.com/akkinasrikar/ecommerce-cart/api"
 	"github.com/akkinasrikar/ecommerce-cart/controllers"
 	"github.com/akkinasrikar/ecommerce-cart/database"
+	"github.com/akkinasrikar/ecommerce-cart/kafka"
 	"github.com/akkinasrikar/ecommerce-cart/middleware"
 	"github.com/akkinasrikar/ecommerce-cart/repositories"
 	servicesLogin "github.com/akkinasrikar/ecommerce-cart/services/login"
@@ -15,7 +16,7 @@ import (
 	"github.com/hibiken/asynq"
 )
 
-func setUpRoutes(router *gin.Engine, db database.DB, redisClient *redis.Client) {
+func setUpRoutes(router *gin.Engine, db database.DB, redisClient *redis.Client, producer kafka.Producer) {
 	ecomStore := repositories.NewRepository(db)
 	validatorsLogin := validatorsLogin.NewValidator()
 
@@ -27,7 +28,7 @@ func setUpRoutes(router *gin.Engine, db database.DB, redisClient *redis.Client) 
 	asynqClient := asynq.NewClient(asynq.RedisClientOpt{Addr: "127.0.0.1:6379"})
 	productAsynqService := services.NewAsynqService(ecomStore, asynqClient)
 	validatorServices := validator.NewValidator(ecomStore)
-	ecomServices := services.NewService(apiServices, ecomStore, productAsynqService)
+	ecomServices := services.NewService(apiServices, ecomStore, productAsynqService, producer)
 	ecomHandler := controllers.NewProductHandler(validatorServices, ecomServices)
 	productHandler(router, *ecomHandler)
 }

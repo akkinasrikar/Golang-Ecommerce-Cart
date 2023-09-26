@@ -1,7 +1,13 @@
 package server
 
 import (
+	"context"
+	"os/signal"
+	"syscall"
+
+	"github.com/akkinasrikar/ecommerce-cart/config"
 	"github.com/akkinasrikar/ecommerce-cart/database"
+	"github.com/akkinasrikar/ecommerce-cart/kafka"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"gorm.io/gorm"
@@ -16,11 +22,12 @@ func Init(db *gorm.DB) (*HttpServer, error) {
 	router := gin.Default()
 	server.Router = router
 	redisClient := InitRedisCache()
+	producer := InitKafkaProducer()
 
 	// create postgres db connection database.DB
 	dbStore := database.NewDb(db)
 	// check if data is seeded
-	setUpRoutes(router, dbStore, redisClient)
+	setUpRoutes(router, dbStore, redisClient, producer)
 	return server, nil
 }
 
@@ -40,4 +47,11 @@ func InitRedisCache() *redis.Client {
 		panic(err)
 	}
 	return rdb
+}
+
+func InitKafkaProducer() (kafka.Producer) {
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+	producer := config.StartKafkaProducer(ctx, *config.Kafka)
+	return producer
 }

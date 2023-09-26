@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/akkinasrikar/ecommerce-cart/api"
+	"github.com/akkinasrikar/ecommerce-cart/kafka"
 	"github.com/akkinasrikar/ecommerce-cart/models"
 	"github.com/akkinasrikar/ecommerce-cart/models/entities"
 	"github.com/akkinasrikar/ecommerce-cart/repositories"
@@ -25,15 +26,17 @@ type Products interface {
 }
 
 type products struct {
-	APIProvider api.Service
-	ProducAsynqService ProducAsynqService 
-	Store       repositories.RepositoryInterface
+	APIProvider        api.Service
+	ProducAsynqService ProducAsynqService
+	Store              repositories.RepositoryInterface
+	Producer           kafka.Producer
 }
 
-func NewService(apiProvider api.Service, store repositories.RepositoryInterface, producAsynqService ProducAsynqService) Products {
+func NewService(apiProvider api.Service, store repositories.RepositoryInterface, producAsynqService ProducAsynqService, producer kafka.Producer) Products {
 	return &products{
 		ProducAsynqService: producAsynqService,
-		APIProvider: apiProvider,
-		Store:       store,
+		APIProvider:        apiProvider,
+		Store:              store,
+		Producer:           producer,
 	}
 }

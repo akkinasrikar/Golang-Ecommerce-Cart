@@ -17,4 +17,5 @@ func Init() {
 	}
 
 	loadFakeStoreConfig()
+	loadKafkaConfig()
 }
