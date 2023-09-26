@@ -32,6 +32,7 @@ func (p *products) SeedData(ctx context.Context) models.EcomError {
 			ItemCategory:    value.Category,
 			ItemCount:       value.Rating.Count,
 		}
+		go p.Producer.Publish(item)
 		_, err := p.Store.CreateProduct(item)
 		if err.Message != nil {
 			return *helper.ErrorInternalSystemError(err.Message.Error())
@@ -40,6 +41,7 @@ func (p *products) SeedData(ctx context.Context) models.EcomError {
 		if asynqErr != nil {
 			return *helper.ErrorInternalSystemError(asynqErr.Error())
 		}
+
 	}
 	return models.EcomError{}
 }
@@ -319,6 +321,8 @@ func (p *products) OrderProducts(ctx context.Context, req models.PlaceOrder) (mo
 		if ecomErr.Message != nil {
 			return models.EcomOrderResponse{}, ecomErr
 		}
+
+		p.Producer.Publish(OrderedObject)
 
 		orderDetails = append(orderDetails, models.OrderDetails{
 			OrderID:      OrderedObject.OrderID,

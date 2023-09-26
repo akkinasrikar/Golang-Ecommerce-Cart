@@ -7,9 +7,9 @@ import (
 )
 
 type FakeStoreConfig struct {
-	BaseUrl string `json:"FAKESTORE_BASEURL"`
-	PublicKey string `json:"FAKESTORE_PUBLICKEY"`
-	PrivateKey string `json:"FAKESTORE_PRIVATEKEY"`
+	BaseUrl       string `json:"FAKESTORE_BASEURL"`
+	PublicKey     string `json:"FAKESTORE_PUBLICKEY"`
+	PrivateKey    string `json:"FAKESTORE_PRIVATEKEY"`
 }
 
 var FakeStore *FakeStoreConfig
