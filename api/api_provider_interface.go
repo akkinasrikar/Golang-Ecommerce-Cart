@@ -9,11 +9,13 @@ import (
 	"github.com/akkinasrikar/ecommerce-cart/config"
 	"github.com/akkinasrikar/ecommerce-cart/constants"
 	"github.com/akkinasrikar/ecommerce-cart/models"
+	"github.com/akkinasrikar/ecommerce-cart/models/entities"
 )
 
 //go:generate mockgen -package mocks -source=api_provider_interface.go -destination=mocks/api_provider_mocks.go
 type Service interface {
 	GetItems(ecomCtx context.Context) (dto.ItemsResponse, models.EcomError)
+	SendMail(orderDetails entities.Order, ItemDetails entities.Item, email string) error
 }
 
 type service struct {

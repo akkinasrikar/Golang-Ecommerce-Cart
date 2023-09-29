@@ -3,15 +3,21 @@ package api
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 
 	"github.com/akkinasrikar/ecommerce-cart/api/dto"
+	"github.com/akkinasrikar/ecommerce-cart/config"
 	"github.com/akkinasrikar/ecommerce-cart/models"
+	"github.com/akkinasrikar/ecommerce-cart/models/entities"
+	"github.com/akkinasrikar/ecommerce-cart/utils"
 	"github.com/akkinasrikar/ecommerce-cart/validators/helper"
 	"github.com/pkg/errors"
+	"gopkg.in/gomail.v2"
 )
 
 func setHttpHeader(ecomCtx context.Context, header http.Header) http.Header {
@@ -53,12 +59,11 @@ func (t *service) clientHttpCall(zwCtx context.Context, client HttpCall, request
 }
 
 func (s *service) GetItems(ecomCtx context.Context) (dto.ItemsResponse, models.EcomError) {
-
 	url, err := url.JoinPath(s.BaseURL, "products")
 	if err != nil {
 		return dto.ItemsResponse{}, *helper.ErrorInternalSystemError("Error in creating url")
 	}
-	
+
 	req := dto.Request{
 		Method:     http.MethodGet,
 		Url:        url,
@@ -86,4 +91,26 @@ func (s *service) GetItems(ecomCtx context.Context) (dto.ItemsResponse, models.E
 	}
 
 	return itemsResponse, models.EcomError{}
+}
+
+func (s *service) SendMail(orderDetails entities.Order, ItemDetails entities.Item, email string) error {
+	subject := "Order Confirmation"
+
+	m := gomail.NewMessage()
+	m.SetHeader("From", config.FakeStore.Gmail)
+	m.SetHeader("To", email)
+	m.SetHeader("Subject", subject)
+	m.SetBody("text/html", utils.GenerateHtmlResponse2(ItemDetails.ImageBase64, ItemDetails, orderDetails))
+	imageBytes , err := base64.StdEncoding.DecodeString(ItemDetails.ImageBase64)
+	if err != nil {
+		return err
+	}
+	os.WriteFile("image.png", imageBytes, 0644)
+	defer os.Remove("image.png")
+	m.Embed("image.png")
+	d := gomail.NewDialer("smtp.gmail.com", 587, config.FakeStore.Gmail, config.FakeStore.MailPassword)
+	if err := d.DialAndSend(m); err != nil {
+		return err
+	}
+	return nil
 }

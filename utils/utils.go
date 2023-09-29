@@ -212,6 +212,35 @@ func GenerateHtmlResponse(image string, data entities.Item) string {
 	return htmlResponse
 }
 
+func GenerateHtmlResponse2(image string, data entities.Item, orderDetails entities.Order) string {
+	htmlResponse := `
+	<!DOCTYPE html>
+	<html>
+		<head>
+			<title>Data with Image</title>
+		</head>
+			<body>
+				<h1 style="text-align:center">Product Details</h1>
+					<p><strong>Item ID:</strong> %d</p>
+					<p><strong>Item Title:</strong> %s</p>
+					<p><strong>Item Price:</strong> $%.2f</p>
+					<p><strong>Item Description:</strong> %s</p>
+					<p><strong>Item Category:</strong> %s</p>
+					<p><strong>Item Rating:</strong> %.2f</p>
+					<p><strong>Item Count:</strong> %d</p>
+					<p><strong>Order ID:</strong> %s</p>
+					<p><strong>Order Date:</strong> %s</p>
+					<p><strong>Order Status:</strong> %s</p>
+					<p><strong>Order Total:</strong> $%.2f</p>
+					<p><strong>Order Delivery Date:</strong> %s</p>
+					<p>Thanks for shopping with us!</p>
+			</body>
+	</html>
+`
+	htmlResponse = fmt.Sprintf(htmlResponse, data.ItemID, data.ItemTitle, data.ItemPrice, data.ItemDescription, data.ItemCategory, data.ItemRating, data.ItemCount, orderDetails.OrderID, orderDetails.OrderDate, orderDetails.OrderStatus, orderDetails.OrderAmount, orderDetails.DeliveryDate) 
+	return htmlResponse
+}
+
 func ResizeImage(imageBytes []byte) ([]byte, error) {
 	img, _, err := image.Decode(bytes.NewReader(imageBytes))
 	if err != nil {

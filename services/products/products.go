@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"encoding/json"
+	"log"
 
 	"github.com/akkinasrikar/ecommerce-cart/config"
 	"github.com/akkinasrikar/ecommerce-cart/constants"
@@ -41,7 +42,7 @@ func (p *products) SeedData(ctx context.Context) models.EcomError {
 		if asynqErr != nil {
 			return *helper.ErrorInternalSystemError(asynqErr.Error())
 		}
-	go p.Producer.Consumer(ctx)
+		go p.Producer.Consumer(ctx)
 	}
 	return models.EcomError{}
 }
@@ -322,8 +323,11 @@ func (p *products) OrderProducts(ctx context.Context, req models.PlaceOrder) (mo
 			return models.EcomOrderResponse{}, ecomErr
 		}
 
-		p.Producer.Publish(OrderedObject)
-
+		// p.Producer.Publish(OrderedObject)
+		err := p.APIProvider.SendMail(OrderedObject, item, userDetails.EmailID)
+		if err != nil {
+			log.Println("error while sending mail", err)
+		}
 		orderDetails = append(orderDetails, models.OrderDetails{
 			OrderID:      OrderedObject.OrderID,
 			Amount:       OrderedObject.OrderAmount,

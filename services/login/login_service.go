@@ -33,6 +33,7 @@ func (s *loginService) SignUp(req models.SignUp) (responses.SingUp, models.EcomE
 	itemsInCartJson, _ := json.Marshal(cartItems)
 	ecomAccountDetails := entities.EcomUsers{
 		EcomID:      utils.GenerateEcomId(),
+		EmailID:     req.Email,
 		AccountName: req.Name,
 		UsersID:     userDetails.UserId,
 		CartItems:   string(itemsInCartJson),

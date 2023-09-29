@@ -8,6 +8,7 @@ CREATE TABLE public.sign_ups (
 
 CREATE TABLE public.ecom_users (
     ecom_id varchar(255) NOT NULL,
+    email_id varchar(255) NOT NULL,
     account_name varchar(255) NOT NULL,
     wallet_amount int8 NOT NULL DEFAULT 0,
     cart_items varchar(500) NULL,
