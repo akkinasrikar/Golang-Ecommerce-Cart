@@ -24,6 +24,8 @@ var ProductConstants = struct {
 
 var ProcessTasks = struct {
 	IMAGERESIZE string
+	CONSUMEDATA string
 }{
 	IMAGERESIZE: "image-resize",
+	CONSUMEDATA: "consume-data",
 }

@@ -41,5 +41,5 @@ type RepositoryInterface interface {
 	UpdateOrderByID(orderId string, orderDetails entities.Order) (entities.Order, models.EcomError)
 	GetAllOrders() ([]entities.Order, models.EcomError)
 	GetAllOrderByUserID(ctx context.Context) ([]entities.Order, models.EcomError)
-
+	ConsumeKafkaData(ctx context.Context, data entities.Consume) (entities.Consume, models.EcomError)
 }

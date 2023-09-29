@@ -51,6 +51,21 @@ func (mr *MockRepositoryInterfaceMockRecorder) AddToCart(userDetails, Id interfa
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddToCart", reflect.TypeOf((*MockRepositoryInterface)(nil).AddToCart), userDetails, Id)
 }
 
+// ConsumeKafkaData mocks base method.
+func (m *MockRepositoryInterface) ConsumeKafkaData(ctx context.Context, data entities.Consume) (entities.Consume, models.EcomError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ConsumeKafkaData", ctx, data)
+	ret0, _ := ret[0].(entities.Consume)
+	ret1, _ := ret[1].(models.EcomError)
+	return ret0, ret1
+}
+
+// ConsumeKafkaData indicates an expected call of ConsumeKafkaData.
+func (mr *MockRepositoryInterfaceMockRecorder) ConsumeKafkaData(ctx, data interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConsumeKafkaData", reflect.TypeOf((*MockRepositoryInterface)(nil).ConsumeKafkaData), ctx, data)
+}
+
 // CreateAddress mocks base method.
 func (m *MockRepositoryInterface) CreateAddress(addressDetails entities.DeliveryAddress) (entities.DeliveryAddress, models.EcomError) {
 	m.ctrl.T.Helper()

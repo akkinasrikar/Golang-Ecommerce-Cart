@@ -23,6 +23,7 @@ type ProducAsynqService interface {
 	ProductImageResize(context.Context, int) error
 	ImageResize(context.Context, models.ImageResize) error
 	UpdateDeliveryStatus(context.Context) error
+	SubscribeDataFromKafka(context.Context, entities.Consume) error
 }
 
 type productAsynqImpl struct {
@@ -94,6 +95,14 @@ func (p *productAsynqImpl) UpdateDeliveryStatus(ctx context.Context) error {
 				return errors.New("error while updating order status")
 			}
 		}
+	}
+	return nil
+}
+
+func (p *productAsynqImpl) SubscribeDataFromKafka(ctx context.Context, data entities.Consume) error {
+	_, ecomErr := p.Store.ConsumeKafkaData(ctx, data)
+	if ecomErr.Message != nil {
+		return errors.New("error while consuming data from kafka")
 	}
 	return nil
 }

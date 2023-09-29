@@ -9,6 +9,7 @@ import (
 
 func Start(ctx context.Context, s *gocron.Scheduler, productService services.ProducAsynqService) {
 	log.Println("Starting cron worker")
+	
 	_, err := s.Every(60).Seconds().Do(func() {
 		err := productService.UpdateDeliveryStatus(ctx)
 		if err != nil {
@@ -19,5 +20,6 @@ func Start(ctx context.Context, s *gocron.Scheduler, productService services.Pro
 	if err != nil {
 		log.Println("Error scheduling cron job", err)
 	}
+
 	s.StartAsync()
 }

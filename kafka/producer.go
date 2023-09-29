@@ -11,13 +11,18 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/akkinasrikar/ecommerce-cart/constants"
+	"github.com/akkinasrikar/ecommerce-cart/models/entities"
+	"github.com/akkinasrikar/ecommerce-cart/utils"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/hibiken/asynq"
 )
 
 type Producer interface {
 	Start(ctx context.Context)
 	Stop()
 	Publish(message interface{})
+	Consumer(ctx context.Context)
 }
 
 type kafkaProducer struct {
@@ -25,6 +30,7 @@ type kafkaProducer struct {
 	jobs     chan interface{}
 	wg       sync.WaitGroup
 	producer *kafka.Producer
+	asynq    *asynq.Client
 }
 
 type ProducerConfig struct {
@@ -35,8 +41,11 @@ type ProducerConfig struct {
 	*kafka.ConfigMap
 }
 
-func NewProducer(config *ProducerConfig) Producer {
-	return &kafkaProducer{config: config}
+func NewProducer(config *ProducerConfig, asynqClient *asynq.Client) Producer {
+	return &kafkaProducer{
+		config: config,
+		asynq:  asynqClient,
+	}
 }
 
 func (kf *kafkaProducer) initPools() {
@@ -139,4 +148,47 @@ func (kf *kafkaProducer) processMessage(message interface{}) {
 		log.Printf("failed to produce message: %v", err)
 	}
 	return
+}
+
+func (kf *kafkaProducer) Consumer(ctx context.Context) {
+	consumer, err := kafka.NewConsumer(kf.config.ConfigMap)
+	if err != nil {
+		log.Println("failed to create kafka consumer")
+	}
+	consumer.SubscribeTopics([]string{kf.config.ProducerTopic}, nil)
+
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				log.Println("context cancelled")
+				return
+			default:
+				msg, err := consumer.ReadMessage(-1)
+				if err != nil {
+					log.Printf("failed to read message: %v", err)
+					continue
+				}
+				data := entities.Consume{
+					ProcessId:   string(msg.Key),
+					ProcessData: string(msg.Value),
+					ProcessName: constants.ProcessTasks.CONSUMEDATA,
+				}
+				// marshal data
+				jsonData, err := json.Marshal(data)
+				if err != nil {
+					log.Printf("failed to marshal message: %v", err)
+					continue
+				}
+				task := asynq.NewTask(constants.ProcessTasks.CONSUMEDATA, jsonData, asynq.TaskID(utils.GenerateTaskID()))
+				_, err = kf.asynq.Enqueue(task)
+				if err != nil {
+					log.Printf("failed to enqueue task: %v", err)
+					continue
+				}
+				log.Printf("******************* Consumer Task Enqueued *******************")
+				log.Printf("Consumer worker received message: %s\n", string(jsonData))
+			}
+		}
+	}()
 }
