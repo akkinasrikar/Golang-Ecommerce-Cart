@@ -10,6 +10,7 @@ import (
 	"github.com/akkinasrikar/ecommerce-cart/kafka"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"github.com/hibiken/asynq"
 	"gorm.io/gorm"
 )
 
@@ -49,9 +50,11 @@ func InitRedisCache() *redis.Client {
 	return rdb
 }
 
-func InitKafkaProducer() (kafka.Producer) {
+func InitKafkaProducer() kafka.Producer {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
-	producer := config.StartKafkaProducer(ctx, *config.Kafka)
+	redisAddr := "127.0.0.1:6379"
+	asynqClient := asynq.NewClient(asynq.RedisClientOpt{Addr: redisAddr})
+	producer := config.StartKafkaProducer(ctx, *config.Kafka, asynqClient)
 	return producer
 }

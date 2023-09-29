@@ -9,6 +9,7 @@ import (
 	"github.com/akkinasrikar/ecommerce-cart/constants"
 	"github.com/akkinasrikar/ecommerce-cart/database"
 	"github.com/akkinasrikar/ecommerce-cart/models"
+	"github.com/akkinasrikar/ecommerce-cart/models/entities"
 	"github.com/akkinasrikar/ecommerce-cart/repositories"
 	services "github.com/akkinasrikar/ecommerce-cart/services/products"
 	"github.com/akkinasrikar/ecommerce-cart/worker/cron"
@@ -68,6 +69,14 @@ func main() {
 			return err
 		}
 		return productService.ImageResize(ctx, task)
+	})
+	mux.HandleFunc(constants.ProcessTasks.CONSUMEDATA, func(ctx context.Context, t *asynq.Task) error {
+		task := entities.Consume{}
+		err := json.Unmarshal(t.Payload(), &task)
+		if err != nil {
+			return err
+		}
+		return productService.SubscribeDataFromKafka(ctx, task)
 	})
 	if err := server.Run(mux); err != nil {
 		log.Fatal(err)

@@ -99,6 +99,10 @@ func GenerateOrderId() string {
 	return "order_" + GenerateRandomString()
 }
 
+func GenerateTaskID() string {
+	return "task_" + GenerateRandomString()
+}
+
 func GenerateRandomDate() string {
 	min := time.Now().Unix()
 	max := time.Now().AddDate(0, 0, 3).Unix()

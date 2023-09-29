@@ -41,7 +41,7 @@ func (p *products) SeedData(ctx context.Context) models.EcomError {
 		if asynqErr != nil {
 			return *helper.ErrorInternalSystemError(asynqErr.Error())
 		}
-
+	go p.Producer.Consumer(ctx)
 	}
 	return models.EcomError{}
 }

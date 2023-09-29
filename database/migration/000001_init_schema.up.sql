@@ -68,3 +68,9 @@ CREATE TABLE public.items (
     CONSTRAINT items_item_id_key UNIQUE (item_id)
 );
 
+CREATE TABLE public.consumes (
+    process_id varchar(255) NOT NULL,
+    process_name varchar(255) NOT NULL,
+    process_data varchar(100000) NOT NULL
+);
+

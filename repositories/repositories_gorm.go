@@ -189,3 +189,10 @@ func (r *Repository) GetAddressById(addressId string) (entities.DeliveryAddress,
 	}
 	return addressDetails, models.EcomError{}
 }
+
+func (r *Repository) ConsumeKafkaData(ctx context.Context, data entities.Consume) (entities.Consume, models.EcomError) {
+	if err := r.dbStore.Create(&data); err != nil {
+		return entities.Consume{}, *helper.ErrorInternalSystemError("Error while consuming kafka data : " + err.Error())
+	}
+	return data, models.EcomError{}
+}
