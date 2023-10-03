@@ -15,7 +15,7 @@ import (
 //go:generate mockgen -package mocks -source=api_provider_interface.go -destination=mocks/api_provider_mocks.go
 type Service interface {
 	GetItems(ecomCtx context.Context) (dto.ItemsResponse, models.EcomError)
-	SendMail(orderDetails entities.Order, ItemDetails entities.Item, email string) error
+	SendMail(itemDetails entities.Item, orderDetails entities.Order, email string) error
 }
 
 type service struct {

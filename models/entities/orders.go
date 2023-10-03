@@ -2,6 +2,7 @@ package entities
 
 type Order struct {
 	OrderID        string `gorm:"column:order_id;type:varchar(255);primary_key;not null"`
+	ItemID         int    `gorm:"column:item_id;type:int4;not null"`
 	OrderStatus    string `gorm:"column:order_status;type:varchar(255);not null"`
 	OrderAmount    int64  `gorm:"column:order_amount;type:int8;not null"`
 	OrderDate      string `gorm:"column:order_date;type:varchar(255);not null"`

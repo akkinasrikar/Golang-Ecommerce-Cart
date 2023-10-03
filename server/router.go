@@ -26,7 +26,7 @@ func setUpRoutes(router *gin.Engine, db database.DB, redisClient *redis.Client, 
 
 	apiServices := api.NewService()
 	asynqClient := asynq.NewClient(asynq.RedisClientOpt{Addr: "127.0.0.1:6379"})
-	productAsynqService := services.NewAsynqService(ecomStore, asynqClient)
+	productAsynqService := services.NewAsynqService(ecomStore, asynqClient, apiServices, producer)
 	validatorServices := validator.NewValidator(ecomStore)
 	ecomServices := services.NewService(apiServices, ecomStore, productAsynqService, producer)
 	ecomHandler := controllers.NewProductHandler(validatorServices, ecomServices)

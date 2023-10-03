@@ -93,19 +93,19 @@ func (s *service) GetItems(ecomCtx context.Context) (dto.ItemsResponse, models.E
 	return itemsResponse, models.EcomError{}
 }
 
-func (s *service) SendMail(orderDetails entities.Order, ItemDetails entities.Item, email string) error {
+func (s *service) SendMail(itemDetails entities.Item, orderDetails entities.Order, email string) error {
 	subject := "Order Confirmation"
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", config.FakeStore.Gmail)
 	m.SetHeader("To", email)
 	m.SetHeader("Subject", subject)
-	m.SetBody("text/html", utils.GenerateHtmlResponse2(ItemDetails.ImageBase64, ItemDetails, orderDetails))
-	imageBytes , err := base64.StdEncoding.DecodeString(ItemDetails.ImageBase64)
+	m.SetBody("text/html", utils.GenerateHtmlResponse2(itemDetails, orderDetails))
+	imageBytes, err := base64.StdEncoding.DecodeString(itemDetails.ImageBase64)
 	if err != nil {
 		return err
 	}
-	os.WriteFile("image.png", imageBytes, 0644)
+	os.WriteFile("image.png", imageBytes, 0o644)
 	defer os.Remove("image.png")
 	m.Embed("image.png")
 	d := gomail.NewDialer("smtp.gmail.com", 587, config.FakeStore.Gmail, config.FakeStore.MailPassword)

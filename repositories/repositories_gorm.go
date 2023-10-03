@@ -196,3 +196,21 @@ func (r *Repository) ConsumeKafkaData(ctx context.Context, data entities.Consume
 	}
 	return data, models.EcomError{}
 }
+
+func (r *Repository) GetOrderByID(orderId string) (entities.Order, models.EcomError) {
+	var order entities.Order
+	_, err := r.dbStore.Where("order_id = ?", orderId).Find(&order)
+	if err != nil {
+		return entities.Order{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+	return order, models.EcomError{}
+}
+
+func (r *Repository) GetUserDetailsById(usersId int64) (entities.EcomUsers, models.EcomError) {
+	var user entities.EcomUsers
+	_, err := r.dbStore.Where("users_id = ?", usersId).Find(&user)
+	if err != nil {
+		return entities.EcomUsers{}, *helper.ErrorInternalSystemError(err.Error())
+	}
+	return user, models.EcomError{}
+}

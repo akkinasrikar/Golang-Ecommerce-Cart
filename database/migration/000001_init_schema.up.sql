@@ -34,6 +34,7 @@ CREATE TABLE public.delivery_addresses (
 
 CREATE TABLE public.orders (
     order_id varchar(255) NOT NULL,
+    item_id int8 NOT NULL,
     order_status varchar(255) NOT NULL,
     order_amount int8 NOT NULL,
     order_date varchar(255) NOT NULL,

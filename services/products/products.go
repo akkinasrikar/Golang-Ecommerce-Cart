@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"encoding/json"
-	"log"
 
 	"github.com/akkinasrikar/ecommerce-cart/config"
 	"github.com/akkinasrikar/ecommerce-cart/constants"
@@ -33,7 +32,6 @@ func (p *products) SeedData(ctx context.Context) models.EcomError {
 			ItemCategory:    value.Category,
 			ItemCount:       value.Rating.Count,
 		}
-		go p.Producer.Publish(item)
 		_, err := p.Store.CreateProduct(item)
 		if err.Message != nil {
 			return *helper.ErrorInternalSystemError(err.Message.Error())
@@ -42,7 +40,6 @@ func (p *products) SeedData(ctx context.Context) models.EcomError {
 		if asynqErr != nil {
 			return *helper.ErrorInternalSystemError(asynqErr.Error())
 		}
-		go p.Producer.Consumer(ctx)
 	}
 	return models.EcomError{}
 }
@@ -294,7 +291,6 @@ func (p *products) OrderProducts(ctx context.Context, req models.PlaceOrder) (mo
 		return models.EcomOrderResponse{}, *helper.ErrorInternalSystemError(err.Error())
 	}
 
-	// last four digits of card adn remaining xxxxx
 	cardNumber := utils.FormatCardNumber(req.CardNumber)
 
 	for _, value := range cartItems.ItemsID {
@@ -305,6 +301,7 @@ func (p *products) OrderProducts(ctx context.Context, req models.PlaceOrder) (mo
 
 		OrderObject := entities.Order{
 			OrderID:        utils.GenerateOrderId(),
+			ItemID:         item.ItemID,
 			OrderStatus:    constants.ProductConstants.SUCCESS,
 			OrderAmount:    int64(item.ItemPrice),
 			OrderDate:      utils.GenerateCurrentDate(),
@@ -323,11 +320,8 @@ func (p *products) OrderProducts(ctx context.Context, req models.PlaceOrder) (mo
 			return models.EcomOrderResponse{}, ecomErr
 		}
 
-		// p.Producer.Publish(OrderedObject)
-		err := p.APIProvider.SendMail(OrderedObject, item, userDetails.EmailID)
-		if err != nil {
-			log.Println("error while sending mail", err)
-		}
+		p.Producer.Publish(OrderedObject.OrderID)
+
 		orderDetails = append(orderDetails, models.OrderDetails{
 			OrderID:      OrderedObject.OrderID,
 			Amount:       OrderedObject.OrderAmount,

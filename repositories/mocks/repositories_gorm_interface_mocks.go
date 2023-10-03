@@ -246,6 +246,21 @@ func (mr *MockRepositoryInterfaceMockRecorder) GetCardDetailsById(cardId interfa
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCardDetailsById", reflect.TypeOf((*MockRepositoryInterface)(nil).GetCardDetailsById), cardId)
 }
 
+// GetOrderByID mocks base method.
+func (m *MockRepositoryInterface) GetOrderByID(orderId string) (entities.Order, models.EcomError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOrderByID", orderId)
+	ret0, _ := ret[0].(entities.Order)
+	ret1, _ := ret[1].(models.EcomError)
+	return ret0, ret1
+}
+
+// GetOrderByID indicates an expected call of GetOrderByID.
+func (mr *MockRepositoryInterfaceMockRecorder) GetOrderByID(orderId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrderByID", reflect.TypeOf((*MockRepositoryInterface)(nil).GetOrderByID), orderId)
+}
+
 // GetProductById mocks base method.
 func (m *MockRepositoryInterface) GetProductById(id int) (entities.Item, models.EcomError) {
 	m.ctrl.T.Helper()
@@ -289,6 +304,21 @@ func (m *MockRepositoryInterface) GetUserDetails(ctx context.Context) (entities.
 func (mr *MockRepositoryInterfaceMockRecorder) GetUserDetails(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserDetails", reflect.TypeOf((*MockRepositoryInterface)(nil).GetUserDetails), ctx)
+}
+
+// GetUserDetailsById mocks base method.
+func (m *MockRepositoryInterface) GetUserDetailsById(usersId int64) (entities.EcomUsers, models.EcomError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserDetailsById", usersId)
+	ret0, _ := ret[0].(entities.EcomUsers)
+	ret1, _ := ret[1].(models.EcomError)
+	return ret0, ret1
+}
+
+// GetUserDetailsById indicates an expected call of GetUserDetailsById.
+func (mr *MockRepositoryInterfaceMockRecorder) GetUserDetailsById(usersId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserDetailsById", reflect.TypeOf((*MockRepositoryInterface)(nil).GetUserDetailsById), usersId)
 }
 
 // Login mocks base method.
