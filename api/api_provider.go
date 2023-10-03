@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -105,9 +106,10 @@ func (s *service) SendMail(itemDetails entities.Item, orderDetails entities.Orde
 	if err != nil {
 		return err
 	}
-	os.WriteFile("image.png", imageBytes, 0o644)
-	defer os.Remove("image.png")
-	m.Embed("image.png")
+	imageName := "image" + fmt.Sprint(itemDetails.ItemID) + ".png"
+	os.WriteFile(imageName, imageBytes, 0o644)
+	defer os.Remove(imageName)
+	m.Embed(imageName)
 	d := gomail.NewDialer("smtp.gmail.com", 587, config.FakeStore.Gmail, config.FakeStore.MailPassword)
 	if err := d.DialAndSend(m); err != nil {
 		return err
