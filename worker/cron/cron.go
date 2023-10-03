@@ -21,5 +21,12 @@ func Start(ctx context.Context, s *gocron.Scheduler, productService services.Pro
 		log.Println("Error scheduling cron job", err)
 	}
 
+	_, err = s.Every(60).Seconds().Do(func() {
+		err := productService.SubscribeDataFromKafka(ctx)
+		if err != nil {
+			log.Println("Error subscribing data from kafka", err)
+		}
+	})
+
 	s.StartAsync()
 }

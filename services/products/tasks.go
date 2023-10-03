@@ -7,7 +7,9 @@ import (
 	"errors"
 	"strconv"
 
+	"github.com/akkinasrikar/ecommerce-cart/api"
 	"github.com/akkinasrikar/ecommerce-cart/constants"
+	"github.com/akkinasrikar/ecommerce-cart/kafka"
 	"github.com/akkinasrikar/ecommerce-cart/models"
 	"github.com/akkinasrikar/ecommerce-cart/models/entities"
 	"github.com/akkinasrikar/ecommerce-cart/repositories"
@@ -23,18 +25,23 @@ type ProducAsynqService interface {
 	ProductImageResize(context.Context, int) error
 	ImageResize(context.Context, models.ImageResize) error
 	UpdateDeliveryStatus(context.Context) error
-	SubscribeDataFromKafka(context.Context, entities.Consume) error
+	SubscribeDataFromKafka(context.Context) error
+	SendAnEmail(context.Context, models.OrderDetailsEmail) error
 }
 
 type productAsynqImpl struct {
 	Store       repositories.RepositoryInterface
+	APIProvider api.Service
 	asynqClient AsynqPublisher
+	Producer    kafka.Producer
 }
 
-func NewAsynqService(store repositories.RepositoryInterface, asynqClient AsynqPublisher) ProducAsynqService {
+func NewAsynqService(store repositories.RepositoryInterface, asynqClient AsynqPublisher, apiProvider api.Service, producer kafka.Producer) ProducAsynqService {
 	return &productAsynqImpl{
 		Store:       store,
 		asynqClient: asynqClient,
+		APIProvider: apiProvider,
+		Producer:    producer,
 	}
 }
 
@@ -99,10 +106,30 @@ func (p *productAsynqImpl) UpdateDeliveryStatus(ctx context.Context) error {
 	return nil
 }
 
-func (p *productAsynqImpl) SubscribeDataFromKafka(ctx context.Context, data entities.Consume) error {
-	_, ecomErr := p.Store.ConsumeKafkaData(ctx, data)
-	if ecomErr.Message != nil {
-		return errors.New("error while consuming data from kafka")
+func (p *productAsynqImpl) SubscribeDataFromKafka(ctx context.Context) error {
+	p.Producer.Consumer(ctx)
+	return nil
+}
+
+func (p *productAsynqImpl) SendAnEmail(ctx context.Context, orderDetailsEmail models.OrderDetailsEmail) error {
+	var itemDetails entities.Item
+	var orderDetails entities.Order
+	var err models.EcomError
+	orderDetails, err = p.Store.GetOrderByID(orderDetailsEmail.OrderID)
+	if err.Message != nil {
+		return errors.New("error while fetching order from db")
+	}
+	itemDetails, err = p.Store.GetProductById(orderDetails.ItemID)
+	if err.Message != nil {
+		return errors.New("error while fetching product from db")
+	}
+	userDetails, err := p.Store.GetUserDetailsById(orderDetails.UsersID)
+	if err.Message != nil {
+		return errors.New("error while fetching user details from db")
+	}
+	errEcom := p.APIProvider.SendMail(itemDetails, orderDetails, userDetails.EmailID)
+	if errEcom != nil {
+		return errEcom
 	}
 	return nil
 }

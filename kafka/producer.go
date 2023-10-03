@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/akkinasrikar/ecommerce-cart/constants"
-	"github.com/akkinasrikar/ecommerce-cart/models/entities"
+	"github.com/akkinasrikar/ecommerce-cart/models"
 	"github.com/akkinasrikar/ecommerce-cart/utils"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/hibiken/asynq"
@@ -169,25 +169,24 @@ func (kf *kafkaProducer) Consumer(ctx context.Context) {
 					log.Printf("failed to read message: %v", err)
 					continue
 				}
-				data := entities.Consume{
-					ProcessId:   string(msg.Key),
-					ProcessData: string(msg.Value),
-					ProcessName: constants.ProcessTasks.CONSUMEDATA,
+				orderId := string(msg.Value)
+				processedID := orderId[1 : len(orderId)-1]
+				data := models.OrderDetailsEmail{
+					OrderID: processedID,
 				}
-				// marshal data
-				jsonData, err := json.Marshal(data)
+				dataString, err := json.Marshal(data)
 				if err != nil {
 					log.Printf("failed to marshal message: %v", err)
 					continue
 				}
-				task := asynq.NewTask(constants.ProcessTasks.CONSUMEDATA, jsonData, asynq.TaskID(utils.GenerateTaskID()))
+				task := asynq.NewTask(constants.ProcessTasks.SENDEMAIL, dataString, asynq.TaskID(utils.GenerateTaskID()))
 				_, err = kf.asynq.Enqueue(task)
 				if err != nil {
 					log.Printf("failed to enqueue task: %v", err)
 					continue
 				}
 				log.Printf("******************* Consumer Task Enqueued *******************")
-				log.Printf("Consumer worker received message: %s\n", string(jsonData))
+				log.Printf("Sending email to user & enqued task to asynq")
 			}
 		}
 	}()

@@ -27,4 +27,5 @@ vendor/
 
 certificates/
 
-.env
+
+dev.env

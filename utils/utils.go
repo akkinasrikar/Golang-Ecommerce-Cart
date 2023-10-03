@@ -212,7 +212,7 @@ func GenerateHtmlResponse(image string, data entities.Item) string {
 	return htmlResponse
 }
 
-func GenerateHtmlResponse2(image string, data entities.Item, orderDetails entities.Order) string {
+func GenerateHtmlResponse2(data entities.Item, orderDetails entities.Order) string {
 	htmlResponse := `
 	<!DOCTYPE html>
 	<html>

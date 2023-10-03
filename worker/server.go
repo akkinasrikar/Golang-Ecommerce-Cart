@@ -4,12 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"os/signal"
+	"syscall"
 	"time"
 
+	"github.com/akkinasrikar/ecommerce-cart/api"
+	"github.com/akkinasrikar/ecommerce-cart/config"
 	"github.com/akkinasrikar/ecommerce-cart/constants"
 	"github.com/akkinasrikar/ecommerce-cart/database"
 	"github.com/akkinasrikar/ecommerce-cart/models"
-	"github.com/akkinasrikar/ecommerce-cart/models/entities"
 	"github.com/akkinasrikar/ecommerce-cart/repositories"
 	services "github.com/akkinasrikar/ecommerce-cart/services/products"
 	"github.com/akkinasrikar/ecommerce-cart/worker/cron"
@@ -31,12 +34,14 @@ func main() {
 			},
 		},
 	)
-
+	config.Init()
+	ctx, _ := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	asynqClient := asynq.NewClient(asynq.RedisClientOpt{Addr: redisAddr})
+	producer := config.StartKafkaProducer(ctx, *config.Kafka, asynqClient)
 	db := database.ConnectDataBase()
 	dbStore := database.NewDb(db)
 	ecomStore := repositories.NewRepository(dbStore)
-	asynqClient := asynq.NewClient(asynq.RedisClientOpt{Addr: redisAddr})
-	productService := services.NewAsynqService(ecomStore, asynqClient)
+	productService := services.NewAsynqService(ecomStore, asynqClient, api.NewService(), producer)
 
 	redisClient := redis.NewUniversalClient(&redis.UniversalOptions{
 		Addrs: []string{redisAddr},
@@ -47,7 +52,6 @@ func main() {
 		log.Fatal(err)
 	}
 	s := gocron.NewScheduler(time.Local)
-	ctx := context.Background()
 	s.WithDistributedLocker(locker)
 	go cron.Start(ctx, s, productService)
 	defer s.Stop()
@@ -70,13 +74,13 @@ func main() {
 		}
 		return productService.ImageResize(ctx, task)
 	})
-	mux.HandleFunc(constants.ProcessTasks.CONSUMEDATA, func(ctx context.Context, t *asynq.Task) error {
-		task := entities.Consume{}
+	mux.HandleFunc(constants.ProcessTasks.SENDEMAIL, func(ctx context.Context, t *asynq.Task) error {
+		task := models.OrderDetailsEmail{}
 		err := json.Unmarshal(t.Payload(), &task)
 		if err != nil {
 			return err
 		}
-		return productService.SubscribeDataFromKafka(ctx, task)
+		return productService.SendAnEmail(ctx, task)
 	})
 	if err := server.Run(mux); err != nil {
 		log.Fatal(err)

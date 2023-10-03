@@ -11,6 +11,7 @@ import (
 
 	dto "github.com/akkinasrikar/ecommerce-cart/api/dto"
 	models "github.com/akkinasrikar/ecommerce-cart/models"
+	entities "github.com/akkinasrikar/ecommerce-cart/models/entities"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -50,6 +51,20 @@ func (m *MockService) GetItems(ecomCtx context.Context) (dto.ItemsResponse, mode
 func (mr *MockServiceMockRecorder) GetItems(ecomCtx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetItems", reflect.TypeOf((*MockService)(nil).GetItems), ecomCtx)
+}
+
+// SendMail mocks base method.
+func (m *MockService) SendMail(itemDetails entities.Item, orderDetails entities.Order, email string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendMail", itemDetails, orderDetails, email)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendMail indicates an expected call of SendMail.
+func (mr *MockServiceMockRecorder) SendMail(itemDetails, orderDetails, email interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendMail", reflect.TypeOf((*MockService)(nil).SendMail), itemDetails, orderDetails, email)
 }
 
 // MockHttpCall is a mock of HttpCall interface.
