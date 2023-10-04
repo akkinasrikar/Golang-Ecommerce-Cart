@@ -101,6 +101,19 @@ func (p *productAsynqImpl) UpdateDeliveryStatus(ctx context.Context) error {
 			if ecomErr.Message != nil {
 				return errors.New("error while updating order status")
 			}
+			userDetails, err := p.Store.GetUserDetailsById(order.UsersID)
+			if err.Message != nil {
+				return errors.New("error while fetching user details from db")
+			}
+			req := models.SendEmailRequest{
+				Email:   userDetails.EmailID,
+				Subject: "Order Delivery Status",
+				Message: order.OrderID + " is Successfully Delivered, Thank you for shopping with us",
+			}
+			errEcom := p.APIProvider.SendMail(req)
+			if errEcom != nil {
+				return errEcom
+			}
 		}
 	}
 	return nil
@@ -127,7 +140,12 @@ func (p *productAsynqImpl) SendAnEmail(ctx context.Context, orderDetailsEmail mo
 	if err.Message != nil {
 		return errors.New("error while fetching user details from db")
 	}
-	errEcom := p.APIProvider.SendMail(itemDetails, orderDetails, userDetails.EmailID)
+	req := models.SendEmailRequest{
+		Email:   userDetails.EmailID,
+		Subject: "Order Confirmation Details",
+		Message: utils.GenerateHtmlResponse2(itemDetails, orderDetails),
+	}
+	errEcom := p.APIProvider.SendMail(req)
 	if errEcom != nil {
 		return errEcom
 	}

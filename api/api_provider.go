@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -14,7 +13,6 @@ import (
 	"github.com/akkinasrikar/ecommerce-cart/api/dto"
 	"github.com/akkinasrikar/ecommerce-cart/config"
 	"github.com/akkinasrikar/ecommerce-cart/models"
-	"github.com/akkinasrikar/ecommerce-cart/models/entities"
 	"github.com/akkinasrikar/ecommerce-cart/utils"
 	"github.com/akkinasrikar/ecommerce-cart/validators/helper"
 	"github.com/pkg/errors"
@@ -94,22 +92,23 @@ func (s *service) GetItems(ecomCtx context.Context) (dto.ItemsResponse, models.E
 	return itemsResponse, models.EcomError{}
 }
 
-func (s *service) SendMail(itemDetails entities.Item, orderDetails entities.Order, email string) error {
-	subject := "Order Confirmation"
-
+func (s *service) SendMail(req models.SendEmailRequest) error {
 	m := gomail.NewMessage()
 	m.SetHeader("From", config.FakeStore.Gmail)
-	m.SetHeader("To", email)
-	m.SetHeader("Subject", subject)
-	m.SetBody("text/html", utils.GenerateHtmlResponse2(itemDetails, orderDetails))
-	imageBytes, err := base64.StdEncoding.DecodeString(itemDetails.ImageBase64)
-	if err != nil {
-		return err
+	m.SetHeader("To", req.Email)
+	m.SetHeader("Subject", req.Subject)
+	m.SetBody("text/html", req.Message)
+	if req.ImageBase64 != "" {
+		imageBytes, err := base64.StdEncoding.DecodeString(req.ImageBase64)
+		if err != nil {
+			return err
+		}
+
+		imageName := utils.GenerateRandomString() + ".png"
+		os.WriteFile(imageName, imageBytes, 0o644)
+		defer os.Remove(imageName)
+		m.Embed(imageName)
 	}
-	imageName := "image" + fmt.Sprint(itemDetails.ItemID) + ".png"
-	os.WriteFile(imageName, imageBytes, 0o644)
-	defer os.Remove(imageName)
-	m.Embed(imageName)
 	d := gomail.NewDialer("smtp.gmail.com", 587, config.FakeStore.Gmail, config.FakeStore.MailPassword)
 	if err := d.DialAndSend(m); err != nil {
 		return err
