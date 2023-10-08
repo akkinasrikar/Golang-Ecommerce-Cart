@@ -3,12 +3,10 @@ package api
 import (
 	"bytes"
 	"context"
-	"encoding/base64"
 	"encoding/json"
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 
 	"github.com/akkinasrikar/ecommerce-cart/api/dto"
 	"github.com/akkinasrikar/ecommerce-cart/config"
@@ -98,17 +96,14 @@ func (s *service) SendMail(req models.SendEmailRequest) error {
 	m.SetHeader("To", req.Email)
 	m.SetHeader("Subject", req.Subject)
 	m.SetBody("text/html", req.Message)
-	if req.ImageBase64 != "" {
-		imageBytes, err := base64.StdEncoding.DecodeString(req.ImageBase64)
-		if err != nil {
-			return err
-		}
-
-		imageName := utils.GenerateRandomString() + ".png"
-		os.WriteFile(imageName, imageBytes, 0o644)
-		defer os.Remove(imageName)
-		m.Embed(imageName)
+	attachment, err := utils.GeneratePdf(req.Message)
+	if err != nil {
+		return err
 	}
+	m.Attach("invoice.pdf", gomail.SetCopyFunc(func(w io.Writer) error {
+		_, err := io.Copy(w, bytes.NewReader(attachment))
+		return err
+	}))
 	d := gomail.NewDialer("smtp.gmail.com", 587, config.FakeStore.Gmail, config.FakeStore.MailPassword)
 	if err := d.DialAndSend(m); err != nil {
 		return err

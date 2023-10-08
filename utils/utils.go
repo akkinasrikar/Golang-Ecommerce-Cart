@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
 	"github.com/akkinasrikar/ecommerce-cart/constants"
 	"github.com/akkinasrikar/ecommerce-cart/models"
 	"github.com/akkinasrikar/ecommerce-cart/models/entities"
@@ -234,10 +235,14 @@ func GenerateHtmlResponse2(data entities.Item, orderDetails entities.Order) stri
 					<p><strong>Order Total:</strong> $%.2f</p>
 					<p><strong>Order Delivery Date:</strong> %s</p>
 					<p>Thanks for shopping with us!</p>
+				<h1 style="text-align:center" >Image</h1>
+					<div style="text-align: center;">
+						<img src="data:image/png;base64,%s" alt="Embedded Image"
+					</div>
 			</body>
 	</html>
 `
-	htmlResponse = fmt.Sprintf(htmlResponse, data.ItemID, data.ItemTitle, data.ItemPrice, data.ItemDescription, data.ItemCategory, data.ItemRating, data.ItemCount, orderDetails.OrderID, orderDetails.OrderDate, orderDetails.OrderStatus, orderDetails.OrderAmount, orderDetails.DeliveryDate) 
+	htmlResponse = fmt.Sprintf(htmlResponse, data.ItemID, data.ItemTitle, data.ItemPrice, data.ItemDescription, data.ItemCategory, data.ItemRating, data.ItemCount, orderDetails.OrderID, orderDetails.OrderDate, orderDetails.OrderStatus, orderDetails.OrderAmount, orderDetails.DeliveryDate, data.ImageBase64)
 	return htmlResponse
 }
 
@@ -255,4 +260,17 @@ func ResizeImage(imageBytes []byte) ([]byte, error) {
 		return nil, err
 	}
 	return buf.Bytes(), nil
+}
+
+func GeneratePdf(html string) ([]byte, error) {
+	pdf, err := wkhtmltopdf.NewPDFGenerator()
+	if err != nil {
+		return nil, err
+	}
+	pdf.AddPage(wkhtmltopdf.NewPageReader(strings.NewReader(html)))
+	err = pdf.Create()
+	if err != nil {
+		return nil, err
+	}
+	return pdf.Bytes(), nil
 }
